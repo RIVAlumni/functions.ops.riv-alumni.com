@@ -1,0 +1,75 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "`Event Code`",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "`Event Year`",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "participations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "`Event Code`",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "`Full Name`",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "participations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "`Event Code`",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "`Full Name`",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "participations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "`Member ID`",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "`Event Code`",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "participations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "`Member ID`",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "`Event Code`",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
