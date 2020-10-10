@@ -4,7 +4,7 @@ import { logger, EventContext } from 'firebase-functions';
 import { Event } from '../models';
 
 export const onCreateEvent = (
-  snapshot: FirebaseFirestore.DocumentSnapshot,
+  snapshot: firestore.DocumentSnapshot,
   context: EventContext,
   db: FirebaseFirestore.Firestore
 ) => {

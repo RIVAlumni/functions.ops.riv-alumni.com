@@ -4,7 +4,7 @@ import { logger, EventContext } from 'firebase-functions';
 import { Member } from '../models';
 
 export const onCreateMember = (
-  snapshot: FirebaseFirestore.DocumentSnapshot,
+  snapshot: firestore.DocumentSnapshot,
   context: EventContext,
   db: FirebaseFirestore.Firestore
 ) => {
