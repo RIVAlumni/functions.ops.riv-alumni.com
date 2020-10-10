@@ -2,23 +2,98 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    //! REMEMBER TO ADD DATA AGGREGATION RULES
-
     match /{document=**} {
       allow read, write: if false;
     }
 
-    match /users/{userID} {
-      // Non-Privileged User
-      allow get: if request.auth.uid == userID;
+    // NEW RULES
 
-      // Privileged User
-      allow create: if false;
+    match /users/{userId} {
+      // Allow users to get, create and update their own user document.
+      allow get,
+            create,
+            update: if request.auth.uid == userId;
+
+      // Allow users with access level 2 and higher.
       allow get,
             list,
-            update,
-            delete: if getRole('Administrator');
+            update: if getAccessLevel() >= 2;
+
+      allow delete: if false;
     }
+
+    match /remarks/{remarkId} {
+      // Allow users with access level 2 and higher.
+      allow get,
+            list,
+            create,
+            update: if getAccessLevel() >= 2;
+
+      // Allow users with access level 3 and higher.
+      allow get,
+            list,
+            create,
+            update,
+            delete: if getAccessLevel() >= 3;
+    }
+
+    match /members/{memberId} {
+      // Allow users to get, and update their membership document.
+      allow get,
+            update: if getUserData()['Membership ID'] == memberId;
+
+      // Allow users with access level 2 and higher.
+      allow get,
+            list,
+            create,
+            update: if getAccessLevel() >= 2;
+
+      // Allow users with access level 3 and higher.
+      allow get,
+            list,
+            create,
+            update,
+            delete: if getAccessLevel() >= 3;
+    }
+
+    match /events/{eventId} {
+      // Allow users with access level 1 and higher.
+      allow get,
+            list: if getAccessLevel() >= 1;
+
+      // Allow users with access level 2 and higher.
+      allow get,
+            list,
+            create,
+            update: if getAccessLevel() >= 2;
+      
+      // Allow users with access level 3 and higher.
+      allow get,
+            list,
+            create,
+            update,
+            delete: if getAccessLevel() >= 3;
+    }
+
+    match /participations/{participationId} {
+      // Allow users to get their own participation document.
+      allow get: if getExistingData()['Membership ID'] == getUserData()['Membership ID'];
+
+      // Allow users with access level 2 and higher.
+      allow get,
+            list,
+            create,
+            update: if getAccessLevel() >= 2;
+
+      // Allow users with access level 3 and higher.
+      allow get,
+            list,
+            create,
+            update,
+            delete: if getAccessLevel() >= 3;
+    }
+
+    // NEW RULES
 
     match /aggregations/users {
       // Privileged User
@@ -26,50 +101,10 @@ service cloud.firestore {
       allow get, delete: if getRole('Administrator');
     }
 
-  	match /members/{memberID} {
-      // Non-Privileged User
-      allow get: if getUserData()['Membership ID'] == memberID;
-      allow update: if getUserData()['Membership ID'] == memberID;
-
-      // Privileged User
-      allow get,
-            list,
-            create,
-            update: if getRole('Editor')
-                    || getRole('Administrator');
-
-      allow delete: if getRole('Administrator');
-
-      match /remarks/{remarkID} {
-        // Privileged User
-        allow get,
-              list,
-              create,
-              update: if getRole('Editor')
-                      || getRole('Administrator');
-
-        allow delete: if getRole('Administrator');
-      }
-    }
-
     match /aggregations/members {
       // Privileged User
       allow get: if getRole('Editor');
       allow get, delete: if getRole('Administrator');
-    }
-
-    match /events/{eventID} {
-      // Non-Privileged User
-      allow get, list: if getRole('Alumni');
-
-      // Privileged User
-      allow get,
-            list,
-            create,
-            update: if getRole('Editor')
-                    || getRole('Administrator');
-
-      allow delete: if getRole('Administrator');
     }
 
     match /aggregations/events {
@@ -79,22 +114,6 @@ service cloud.firestore {
       // Privileged User
       allow get: if getRole('Editor');
       allow get, delete: if getRole('Administrator');
-    }
-
-    match /participations/{participationID} {
-      allow read, write: if false;
-
-      // Non-Privileged User
-      allow get: if existingData()['Membership ID'] == getUserData()['Membership ID']
-
-      // Privileged User
-      allow get,
-            list,
-            create,
-            update: if getRole('Editor')
-                    || getRole('Administrator');
-
-      allow delete: if getRole('Administrator');
     }
 
     match /aggregations/participations {
@@ -110,8 +129,16 @@ service cloud.firestore {
       return resource.data;
     }
 
+    function getExistingData() {
+      return request.resource.data;
+    }
+
     function incomingData() {
       return request.resource.data;
+    }
+
+    function getAccessLevel() {
+      return request.auth.token['accessLevel']
     }
 
     function getUserData() {
