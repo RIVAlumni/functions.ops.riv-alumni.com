@@ -1,7 +1,7 @@
 /**
  * User represents an OAuth2 user signed into the application.
  *
- * @property [UID]            Represents the registered auth user.
+ * @property [User ID]        Represents the registered auth user.
  * @property [Email]          Represents the email registered by the auth user.
  * @property [Photo URL]      Represents the profile picture attached by the
  *                            auth user.
@@ -16,7 +16,7 @@
  *                            Represents the time when the document is created.
  */
 export interface User {
-  'UID': string;
+  'User ID': string;
   'Email': string;
   'Photo URL': string;
   'Display Name': string;

@@ -37,6 +37,7 @@ export const onCreateUser = (
 
       // Create the updated user document
       const updatedUser = <User>{
+        'User ID': user.uid,
         'Membership ID': memberUid,
         'refreshTime': FirebaseFirestore.FieldValue.serverTimestamp(),
         'updatedAt': FirebaseFirestore.FieldValue.serverTimestamp(),
