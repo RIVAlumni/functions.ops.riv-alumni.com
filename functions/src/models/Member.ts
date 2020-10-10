@@ -50,7 +50,7 @@ export interface Member {
   'Gender': string;
   'Email': string | null;
   'Contact Number': number;
-  'Home Number': string | null;
+  'Home Number': number | null;
   'Current School': string | null;
   'Graduating Class': string;
   'Graduating Year': number;

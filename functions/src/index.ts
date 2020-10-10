@@ -1,7 +1,11 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
-import { onCreateUser, onCreateMember } from './functions/onCreate';
+import {
+  onCreateUser,
+  onCreateMember,
+  onCreateEvent,
+} from './functions/onCreate';
 
 admin.initializeApp();
 
@@ -15,8 +19,13 @@ export const createUser = functions
 
 export const createMember = functions
   .region(DEPLOYMENT_REGION)
-  .firestore.document('users/{docId}')
+  .firestore.document('members/{docId}')
   .onCreate((snap, ctx) => onCreateMember(snap, ctx, firestore));
+
+export const createEvent = functions
+  .region(DEPLOYMENT_REGION)
+  .firestore.document('events')
+  .onCreate((snap, ctx) => onCreateEvent(snap, ctx, firestore));
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
