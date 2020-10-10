@@ -125,15 +125,11 @@ service cloud.firestore {
       allow get, delete: if getRole('Administrator');
     }
 
-    function existingData() {
+    function getExistingData() {
       return resource.data;
     }
 
-    function getExistingData() {
-      return request.resource.data;
-    }
-
-    function incomingData() {
+    function getIncomingData() {
       return request.resource.data;
     }
 
