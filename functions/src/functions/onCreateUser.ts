@@ -18,9 +18,12 @@ export const onCreateUser = (
 
   return db
     .runTransaction(async (t) => {
+      let memberCol: firestore.QuerySnapshot<firestore.DocumentData>;
+
       try {
         // Attempts to find a membership document related to the user's email
-        (await t.get(memberRef)).forEach((doc) => {
+        memberCol = await t.get(memberRef);
+        memberCol.forEach((doc) => {
           if ((doc.data() as Member)['Email'] === user.email)
             memberUid = doc.id;
         });
