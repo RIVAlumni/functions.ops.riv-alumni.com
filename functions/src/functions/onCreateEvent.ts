@@ -1,3 +1,4 @@
+import { firestore } from 'firebase-admin';
 import { logger, EventContext } from 'firebase-functions';
 
 import { Event } from '../models';
@@ -17,8 +18,8 @@ export const onCreateEvent = (
     'Event Assistant In-Charge': data['Event Assistant In-Charge'],
     'Google Drive': data['Google Drive'],
     'Roles': data['Roles'],
-    'updatedAt': FirebaseFirestore.FieldValue.serverTimestamp(),
-    'createdAt': FirebaseFirestore.FieldValue.serverTimestamp(),
+    'updatedAt': firestore.FieldValue.serverTimestamp(),
+    'createdAt': firestore.FieldValue.serverTimestamp(),
   };
 
   return snapshot.ref.set(updatedEvent, { merge: true }).catch(logger.error);

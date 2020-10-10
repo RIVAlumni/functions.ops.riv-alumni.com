@@ -1,4 +1,4 @@
-import { auth } from 'firebase-admin';
+import { auth, firestore } from 'firebase-admin';
 import { logger } from 'firebase-functions';
 
 import { User, Member, CustomClaims } from '../models';
@@ -39,8 +39,8 @@ export const onCreateUser = (
       const updatedUser = <User>{
         'User ID': user.uid,
         'Membership ID': memberUid,
-        'refreshTime': FirebaseFirestore.FieldValue.serverTimestamp(),
-        'updatedAt': FirebaseFirestore.FieldValue.serverTimestamp(),
+        'refreshTime': firestore.FieldValue.serverTimestamp(),
+        'updatedAt': firestore.FieldValue.serverTimestamp(),
       };
 
       try {

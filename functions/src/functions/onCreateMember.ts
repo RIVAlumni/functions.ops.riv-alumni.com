@@ -1,3 +1,4 @@
+import { firestore } from 'firebase-admin';
 import { logger, EventContext } from 'firebase-functions';
 
 import { Member } from '../models';
@@ -22,8 +23,8 @@ export const onCreateMember = (
     'Name of Next-Of-Kin': data['Name of Next-Of-Kin'],
     'Relationship with Next-Of-Kin': data['Relationship with Next-Of-Kin'],
     'Contact Number of Next-Of-Kin': data['Contact Number of Next-Of-Kin'],
-    'updatedAt': FirebaseFirestore.FieldValue.serverTimestamp(),
-    'createdAt': FirebaseFirestore.FieldValue.serverTimestamp(),
+    'updatedAt': firestore.FieldValue.serverTimestamp(),
+    'createdAt': firestore.FieldValue.serverTimestamp(),
   };
 
   return snapshot.ref.set(updatedMember, { merge: true }).catch(logger.error);
