@@ -24,7 +24,7 @@ export const createMember = functions
 
 export const createEvent = functions
   .region(DEPLOYMENT_REGION)
-  .firestore.document('events')
+  .firestore.document('events/{docId}')
   .onCreate((snap, ctx) => onCreateEvent(snap, ctx, firestore));
 
 // // Start writing Firebase Functions
