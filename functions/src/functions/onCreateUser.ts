@@ -1,10 +1,11 @@
 import { auth, firestore } from 'firebase-admin';
-import { logger } from 'firebase-functions';
+import { logger, EventContext } from 'firebase-functions';
 
 import { User, Member, CustomClaims } from '../models';
 
 export const onCreateUser = (
   user: auth.UserRecord,
+  event: EventContext,
   db: firestore.Firestore
 ) => {
   let memberUid: string | null = null;

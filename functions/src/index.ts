@@ -9,7 +9,7 @@ import {
   onCreateUserAggregation,
 } from './functions/onCreate';
 
-import { onDeleteUserAggregation } from './functions/onDelete';
+import { onDeleteUser, onDeleteUserAggregation } from './functions/onDelete';
 
 admin.initializeApp({
   databaseURL: 'https://rivalumniops.firebaseio.com',
@@ -22,7 +22,7 @@ const DEPLOYMENT_REGION = 'asia-east2';
 export const createUser = functions
   .region(DEPLOYMENT_REGION)
   .auth.user()
-  .onCreate((user) => onCreateUser(user, firestore));
+  .onCreate((user, ctx) => onCreateUser(user, ctx, firestore));
 
 export const createMember = functions
   .region(DEPLOYMENT_REGION)
@@ -43,6 +43,15 @@ export const createUserAggregation = functions
   .region(DEPLOYMENT_REGION)
   .firestore.document('users/{docId}')
   .onCreate((snap, ctx) => onCreateUserAggregation(snap, ctx, realtime));
+
+export const deleteUser = functions
+  .region(DEPLOYMENT_REGION)
+  .auth.user()
+  .onDelete((user, ctx) => onDeleteUser(user, ctx, firestore));
+
+// export const deleteMember = functions.region(DEPLOYMENT_REGION)
+// .firestore.document('members/{docId}')
+// .onDelete((snap, ctx) => )
 
 export const deleteUserAggregation = functions
   .region(DEPLOYMENT_REGION)
