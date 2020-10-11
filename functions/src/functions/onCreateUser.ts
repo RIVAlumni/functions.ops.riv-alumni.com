@@ -5,7 +5,7 @@ import { User, Member, CustomClaims } from '../models';
 
 export const onCreateUser = (
   user: auth.UserRecord,
-  db: FirebaseFirestore.Firestore
+  db: firestore.Firestore
 ) => {
   let memberUid: string | null = null;
   let claims: CustomClaims = { accessLevel: 0 };
@@ -39,11 +39,15 @@ export const onCreateUser = (
         claims = { accessLevel: 2 };
 
       // Create the updated user document
-      const updatedUser = <User>{
+      const updatedUser: User = {
         'User ID': user.uid,
+        'Email': user.email || null,
+        'Photo URL': user.photoURL || null,
+        'Display Name': user.displayName || null,
         'Membership ID': memberUid,
         'refreshTime': firestore.FieldValue.serverTimestamp(),
         'updatedAt': firestore.FieldValue.serverTimestamp(),
+        'createdAt': firestore.FieldValue.serverTimestamp(),
       };
 
       try {

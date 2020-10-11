@@ -6,10 +6,14 @@ import {
   onCreateMember,
   onCreateEvent,
   onCreateParticipation,
+  onCreateUserAggregation,
 } from './functions/onCreate';
 
-admin.initializeApp();
+admin.initializeApp({
+  databaseURL: 'https://rivalumniops.firebaseio.com',
+});
 
+const realtime = admin.database();
 const firestore = admin.firestore();
 const DEPLOYMENT_REGION = 'asia-east2';
 
@@ -32,6 +36,11 @@ export const createParticipation = functions
   .region(DEPLOYMENT_REGION)
   .firestore.document('participations/{docId}')
   .onCreate((snap, ctx) => onCreateParticipation(snap, ctx, firestore));
+
+export const createUserAggregation = functions
+  .region(DEPLOYMENT_REGION)
+  .firestore.document('users/{docId}')
+  .onCreate((snap, ctx) => onCreateUserAggregation(snap, ctx, realtime));
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript

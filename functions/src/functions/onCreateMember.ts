@@ -6,7 +6,7 @@ import { Member } from '../models';
 export const onCreateMember = (
   snapshot: firestore.DocumentSnapshot,
   context: EventContext,
-  db: FirebaseFirestore.Firestore
+  db: firestore.Firestore
 ) => {
   const data = snapshot.data() as Member;
 

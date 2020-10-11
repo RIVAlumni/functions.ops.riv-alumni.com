@@ -6,7 +6,7 @@ import { Participation } from '../models';
 export const onCreateParticipation = (
   snapshot: firestore.DocumentSnapshot,
   context: EventContext,
-  db: FirebaseFirestore.Firestore
+  db: firestore.Firestore
 ) => {
   const data = snapshot.data() as Participation;
 

@@ -17,9 +17,9 @@
  */
 export interface User {
   'User ID': string;
-  'Email': string;
-  'Photo URL': string;
-  'Display Name': string;
+  'Email': string | null;
+  'Photo URL': string | null;
+  'Display Name': string | null;
   'Membership ID': string | null;
   'refreshTime': FirebaseFirestore.FieldValue;
   'updatedAt': FirebaseFirestore.FieldValue;
