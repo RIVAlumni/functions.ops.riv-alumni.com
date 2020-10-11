@@ -11,12 +11,30 @@ import {
 
 import { onDeleteUser, onDeleteUserAggregation } from './onDelete';
 
+/**
+ * Initializes the entire `firebase-admin` library for use.
+ *
+ * @remarks
+ * `databaseURL` is required to be set in order for Realtime Database services
+ * to function properly. Removing it will result in function-wide failures.
+ */
 admin.initializeApp({
   databaseURL: 'https://rivalumniops.firebaseio.com',
 });
 
+/**
+ * Realtime references the Firebase Realtime Database for operations.
+ */
 const realtime = admin.database();
+
+/**
+ * Firestore references the Firebase Firestore Database for operations.
+ */
 const firestore = admin.firestore();
+
+/**
+ * DEPLOYMENT_REGION states the location of the deployed functions.
+ */
 const DEPLOYMENT_REGION = 'asia-east2';
 
 export const createUser = functions

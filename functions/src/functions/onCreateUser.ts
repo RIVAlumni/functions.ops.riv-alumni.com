@@ -4,6 +4,20 @@ import { logger, EventContext } from 'firebase-functions';
 import { COL_USERS, COL_MEMBERS } from '../constants';
 import { User, Member, CustomClaims } from '../models';
 
+/**
+ * onCreateUser listens for a new sign-up in Firebase Authentication.
+ *
+ * Operations Procedure (in listed order):
+ * * Create a database transaction.
+ * * Queries the database for a member matching the same email address.
+ * * Determines the user's access level / privileges.
+ * * Sets the user custom claims with their determined access levels.
+ * * Updates the user document with the latest information.
+ *
+ * @param user the object containing all the user information.
+ * @param event the details of the function call.
+ * @param db the reference for interacting with the database.
+ */
 export const onCreateUser = (
   user: auth.UserRecord,
   event: EventContext,
