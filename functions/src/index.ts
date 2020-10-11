@@ -7,9 +7,9 @@ import {
   onCreateEvent,
   onCreateParticipation,
   onCreateUserAggregation,
-} from './functions/onCreate';
+} from './onCreate';
 
-import { onDeleteUser, onDeleteUserAggregation } from './functions/onDelete';
+import { onDeleteUser, onDeleteUserAggregation } from './onDelete';
 
 admin.initializeApp({
   databaseURL: 'https://rivalumniops.firebaseio.com',
@@ -48,10 +48,6 @@ export const deleteUser = functions
   .region(DEPLOYMENT_REGION)
   .auth.user()
   .onDelete((user, ctx) => onDeleteUser(user, ctx, firestore));
-
-// export const deleteMember = functions.region(DEPLOYMENT_REGION)
-// .firestore.document('members/{docId}')
-// .onDelete((snap, ctx) => )
 
 export const deleteUserAggregation = functions
   .region(DEPLOYMENT_REGION)

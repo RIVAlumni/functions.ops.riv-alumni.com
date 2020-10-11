@@ -3,8 +3,8 @@ import { logger, EventContext } from 'firebase-functions';
 
 import { User, UserAggregation } from '../models';
 import {
-  AGGREGATIONS_USER_REF,
-  AGGREGATIONS_USER_COUNT_REF,
+  REF_AGGREGATION_USERS,
+  REF_AGGREGATION_COUNT_USERS,
 } from '../constants';
 
 export const onCreateUserAggregation = async (
@@ -13,8 +13,8 @@ export const onCreateUserAggregation = async (
   db: database.Database
 ) => {
   const data = snapshot.data() as User;
-  const aggregationRef = db.ref(AGGREGATIONS_USER_REF + snapshot.id);
-  const aggregationCountRef = db.ref(AGGREGATIONS_USER_COUNT_REF);
+  const aggregationRef = db.ref(REF_AGGREGATION_USERS + snapshot.id);
+  const aggregationCountRef = db.ref(REF_AGGREGATION_COUNT_USERS);
 
   const userAggregation: UserAggregation = {
     'UID': snapshot.id,

@@ -1,6 +1,7 @@
 import { auth, firestore } from 'firebase-admin';
 import { logger, EventContext } from 'firebase-functions';
 
+import { COL_USERS, COL_MEMBERS } from '../constants';
 import { User, Member, CustomClaims } from '../models';
 
 export const onCreateUser = (
@@ -11,9 +12,9 @@ export const onCreateUser = (
   let memberUid: string | null = null;
   let claims: CustomClaims = { accessLevel: 0 };
 
-  const userRef = db.doc(`users/${user.uid}`);
+  const userRef = db.doc(COL_USERS + user.uid);
   const memberRef = db
-    .collection('members')
+    .collection(COL_MEMBERS)
     .where('Email', '==', user.email)
     .limit(1);
 
