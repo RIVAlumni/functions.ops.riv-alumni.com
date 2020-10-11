@@ -2,6 +2,10 @@ import { database, firestore } from 'firebase-admin';
 import { logger, EventContext } from 'firebase-functions';
 
 import { User, UserAggregation } from '../models';
+import {
+  AGGREGATIONS_USER_REF,
+  AGGREGATIONS_USER_COUNT_REF,
+} from '../constants';
 
 export const onCreateUserAggregation = async (
   snapshot: firestore.DocumentSnapshot,
@@ -9,8 +13,8 @@ export const onCreateUserAggregation = async (
   db: database.Database
 ) => {
   const data = snapshot.data() as User;
-  const aggregationRef = db.ref(`/aggregations/users/${snapshot.id}`);
-  const aggregationCountRef = db.ref(`/aggregationsCount/users`);
+  const aggregationRef = db.ref(AGGREGATIONS_USER_REF + snapshot.id);
+  const aggregationCountRef = db.ref(AGGREGATIONS_USER_COUNT_REF);
 
   const userAggregationList: UserAggregation = {
     'UID': snapshot.id,
