@@ -18,6 +18,7 @@ export const onDeleteUserAggregation = async (
     await aggregationRef.remove();
   } catch (e) {
     logger.error(e);
+    return null;
   }
 
   return aggregationCountRef

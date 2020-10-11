@@ -16,7 +16,7 @@ export const onCreateUserAggregation = async (
   const aggregationRef = db.ref(AGGREGATIONS_USER_REF + snapshot.id);
   const aggregationCountRef = db.ref(AGGREGATIONS_USER_COUNT_REF);
 
-  const userAggregationList: UserAggregation = {
+  const userAggregation: UserAggregation = {
     'UID': snapshot.id,
     'Email': data.Email,
     'Display Name': data['Display Name'],
@@ -24,10 +24,13 @@ export const onCreateUserAggregation = async (
   };
 
   try {
-    await aggregationRef.set(userAggregationList);
+    await aggregationRef.set(userAggregation);
   } catch (e) {
     logger.error(e);
+    return null;
   }
 
-  return aggregationCountRef.transaction((count: number) => (count || 0) + 1);
+  return aggregationCountRef
+    .transaction((count: number) => (count || 0) + 1)
+    .catch(logger.error);
 };
