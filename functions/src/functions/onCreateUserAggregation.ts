@@ -21,5 +21,5 @@ export const onCreateUserAggregation = (
 
   aggregationRef.set(userAggregationList);
 
-  return aggregationCountRef.transaction((count) => count + 1);
+  return aggregationCountRef.transaction((count: number) => (count || 0) + 1);
 };
