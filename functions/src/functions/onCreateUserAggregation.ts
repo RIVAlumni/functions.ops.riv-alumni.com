@@ -18,7 +18,7 @@ export const onCreateUserAggregation = async (
 
   const userAggregation: UserAggregation = {
     'UID': snapshot.id,
-    'Email': data.Email,
+    'Email': data['Email'],
     'Display Name': data['Display Name'],
     'Membership ID': data['Membership ID'],
   };

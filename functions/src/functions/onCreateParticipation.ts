@@ -14,7 +14,7 @@ export const onCreateParticipation = (
     'Membership ID': data['Membership ID'],
     'Event Code': data['Event Code'],
     'VIA Hours': data['VIA Hours'],
-    'Role': data.Role,
+    'Role': data['Role'],
     'updatedAt': firestore.FieldValue.serverTimestamp(),
     'createdAt': firestore.FieldValue.serverTimestamp(),
   };

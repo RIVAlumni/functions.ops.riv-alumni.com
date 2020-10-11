@@ -13,8 +13,8 @@ export const onCreateMember = (
   const updatedMember: Member = {
     'Membership ID': snapshot.id,
     'Full Name': data['Full Name'],
-    'Gender': data.Gender,
-    'Email': data.Email,
+    'Gender': data['Gender'],
+    'Email': data['Email'],
     'Contact Number': data['Contact Number'],
     'Home Number': data['Home Number'],
     'Current School': data['Current School'],
