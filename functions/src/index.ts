@@ -9,6 +9,8 @@ import {
   onCreateUserAggregation,
 } from './functions/onCreate';
 
+import { onDeleteUserAggregation } from './functions/onDelete';
+
 admin.initializeApp({
   databaseURL: 'https://rivalumniops.firebaseio.com',
 });
@@ -41,6 +43,11 @@ export const createUserAggregation = functions
   .region(DEPLOYMENT_REGION)
   .firestore.document('users/{docId}')
   .onCreate((snap, ctx) => onCreateUserAggregation(snap, ctx, realtime));
+
+export const deleteUserAggregation = functions
+  .region(DEPLOYMENT_REGION)
+  .firestore.document('users/{docId}')
+  .onDelete((snap, ctx) => onDeleteUserAggregation(snap, ctx, realtime));
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript

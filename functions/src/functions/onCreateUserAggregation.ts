@@ -1,9 +1,9 @@
 import { database, firestore } from 'firebase-admin';
-import { EventContext } from 'firebase-functions';
+import { logger, EventContext } from 'firebase-functions';
 
 import { User, UserAggregation } from '../models';
 
-export const onCreateUserAggregation = (
+export const onCreateUserAggregation = async (
   snapshot: firestore.DocumentSnapshot,
   context: EventContext,
   db: database.Database
@@ -19,7 +19,11 @@ export const onCreateUserAggregation = (
     'Membership ID': data['Membership ID'],
   };
 
-  aggregationRef.set(userAggregationList);
+  try {
+    await aggregationRef.set(userAggregationList);
+  } catch (e) {
+    logger.error(e);
+  }
 
   return aggregationCountRef.transaction((count: number) => (count || 0) + 1);
 };
