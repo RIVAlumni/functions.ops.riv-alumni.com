@@ -15,7 +15,7 @@ export const onCreateUserAggregation = (
   const userAggregationList: UserAggregation = {
     'UID': snapshot.id,
     'Email': data.Email,
-    'Display Name': data['Display Name'] || '',
+    'Display Name': data['Display Name'],
     'Membership ID': data['Membership ID'],
   };
 
