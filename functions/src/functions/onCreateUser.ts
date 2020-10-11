@@ -29,6 +29,7 @@ export const onCreateUser = (
         });
       } catch (e) {
         logger.error(e);
+        return null;
       }
 
       // Sets the access level to 1 if the user is a member
@@ -55,6 +56,7 @@ export const onCreateUser = (
         await auth().setCustomUserClaims(user.uid, claims);
       } catch (e) {
         logger.error(e);
+        return null;
       }
 
       return t.set(userRef, updatedUser, { merge: true });
