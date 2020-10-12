@@ -1,6 +1,32 @@
 {
   "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null"
+    ".read": "false",
+    ".write": "false",
+
+    "aggregations": {
+      "users": {
+        ".write": "false",
+        ".read": "false"
+      },
+      "members": {
+        ".write": "false",
+        ".read": "false"
+      },
+      "events": {
+        ".write": "false",
+        ".read": "false"
+      },
+      "participations": {
+        ".write": "false",
+        ".read": "false"
+      }
+    },
+
+    "aggregationsCount": {
+      "$key": {
+        ".write": "false",
+        ".read": "auth.token.accessLevel >= 2"
+      }
+    }
   }
 }

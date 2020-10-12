@@ -8,7 +8,7 @@ export const REF_AGN_MEMBERS = '/aggregations/members/';
 export const REF_AGN_EVENTS = '/aggregations/events/';
 export const REF_AGN_PARTICIPATIONS = '/aggregations/participations';
 
-export const REF_AGN_COUNT_USERS = '/aggregations/usersCount';
-export const REF_AGN_COUNT_MEMBERS = '/aggregations/membersCount';
-export const REF_AGN_COUNT_EVENTS = '/aggregations/eventsCount';
-export const REF_AGN_COUNT_PARTICIPATIONS = '/aggregations/participationsCount';
+export const REF_AGN_COUNT_USERS = '/aggregationsCount/users';
+export const REF_AGN_COUNT_MEMBERS = '/aggregationsCount/members';
+export const REF_AGN_COUNT_EVENTS = '/aggregationsCount/events';
+export const REF_AGN_COUNT_PARTICIPATIONS = '/aggregationsCount/participations';
