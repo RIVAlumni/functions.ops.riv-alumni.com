@@ -34,7 +34,7 @@ export const onCreateMember = (
     'Relationship with Next-Of-Kin': data['Relationship with Next-Of-Kin'],
     'Contact Number of Next-Of-Kin': data['Contact Number of Next-Of-Kin'],
     'updatedAt': firestore.FieldValue.serverTimestamp(),
-    'createdAt': firestore.FieldValue.serverTimestamp(),
+    'createdAt': firestore.FieldValue.serverTimestamp()
   };
 
   return snapshot.ref.set(updatedMember, { merge: true }).catch(logger.error);

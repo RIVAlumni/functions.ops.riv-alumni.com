@@ -29,7 +29,7 @@ export const onCreateEvent = (
     'Google Drive': data['Google Drive'],
     'Roles': data['Roles'],
     'updatedAt': firestore.FieldValue.serverTimestamp(),
-    'createdAt': firestore.FieldValue.serverTimestamp(),
+    'createdAt': firestore.FieldValue.serverTimestamp()
   };
 
   return snapshot.ref.set(updatedEvent, { merge: true }).catch(logger.error);

@@ -3,7 +3,7 @@ import { logger, EventContext } from 'firebase-functions';
 
 import {
   REF_AGGREGATION_USERS,
-  REF_AGGREGATION_COUNT_USERS,
+  REF_AGGREGATION_COUNT_USERS
 } from '../constants';
 
 /**

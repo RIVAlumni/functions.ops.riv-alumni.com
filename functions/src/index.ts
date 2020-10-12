@@ -6,7 +6,7 @@ import {
   onCreateMember,
   onCreateEvent,
   onCreateParticipation,
-  onCreateUserAggregation,
+  onCreateUserAggregation
 } from './onCreate';
 
 import { onDeleteUser, onDeleteUserAggregation } from './onDelete';
@@ -19,7 +19,7 @@ import { onDeleteUser, onDeleteUserAggregation } from './onDelete';
  * to function properly. Removing it will result in function-wide failures.
  */
 admin.initializeApp({
-  databaseURL: 'https://rivalumniops.firebaseio.com',
+  databaseURL: 'https://rivalumniops.firebaseio.com'
 });
 
 /**

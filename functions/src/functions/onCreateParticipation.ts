@@ -27,7 +27,7 @@ export const onCreateParticipation = (
     'VIA Hours': data['VIA Hours'],
     'Role': data['Role'],
     'updatedAt': firestore.FieldValue.serverTimestamp(),
-    'createdAt': firestore.FieldValue.serverTimestamp(),
+    'createdAt': firestore.FieldValue.serverTimestamp()
   };
 
   return snapshot.ref

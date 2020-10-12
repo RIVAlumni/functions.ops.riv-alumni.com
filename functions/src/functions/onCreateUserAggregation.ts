@@ -4,7 +4,7 @@ import { logger, EventContext } from 'firebase-functions';
 import { User, UserAggregation } from '../models';
 import {
   REF_AGGREGATION_USERS,
-  REF_AGGREGATION_COUNT_USERS,
+  REF_AGGREGATION_COUNT_USERS
 } from '../constants';
 
 /**
@@ -34,7 +34,7 @@ export const onCreateUserAggregation = async (
     'UID': snapshot.id,
     'Email': data['Email'],
     'Display Name': data['Display Name'],
-    'Membership ID': data['Membership ID'],
+    'Membership ID': data['Membership ID']
   };
 
   try {

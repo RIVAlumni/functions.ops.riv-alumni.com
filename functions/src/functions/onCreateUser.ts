@@ -63,7 +63,7 @@ export const onCreateUser = (
         'Membership ID': memberUid,
         'refreshTime': firestore.FieldValue.serverTimestamp(),
         'updatedAt': firestore.FieldValue.serverTimestamp(),
-        'createdAt': firestore.FieldValue.serverTimestamp(),
+        'createdAt': firestore.FieldValue.serverTimestamp()
       };
 
       try {
