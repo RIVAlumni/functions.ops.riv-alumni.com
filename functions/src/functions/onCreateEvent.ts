@@ -3,6 +3,16 @@ import { logger, EventContext } from 'firebase-functions';
 
 import { Event } from '../models';
 
+/**
+ * onCreateEvent listens for a new document creation in `events` collection.
+ *
+ * @remarks
+ * This function will only add missing keys that can't be added as a user.
+ *
+ * @param snapshot the event data when the function was triggered.
+ * @param context the details of the function call.
+ * @param db the reference for interacting with the database.
+ */
 export const onCreateEvent = (
   snapshot: firestore.DocumentSnapshot,
   context: EventContext,

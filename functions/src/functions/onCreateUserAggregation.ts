@@ -7,6 +7,20 @@ import {
   REF_AGGREGATION_COUNT_USERS,
 } from '../constants';
 
+/**
+ * onCreateUserAggregation listens for a new document creation in
+ * `users` collection and updates the aggregation data.
+ *
+ * @remarks
+ * Operations Procedure (in listed order):
+ * * Build user aggregation data.
+ * * Attempt to write into Realtime DB.
+ * * If successful, proceed to increment the count by 1 using transactions.
+ *
+ * @param snapshot the user data when the function was triggered.
+ * @param context the details of the function call.
+ * @param db the reference for interacting with the database.
+ */
 export const onCreateUserAggregation = async (
   snapshot: firestore.DocumentSnapshot,
   context: EventContext,

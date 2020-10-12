@@ -6,6 +6,19 @@ import {
   REF_AGGREGATION_COUNT_USERS,
 } from '../constants';
 
+/**
+ * onDeleteUserAggregation listens for a document deletion in `users`
+ * collection and updates the aggregation data.
+ *
+ * @remarks
+ * Operations Procedure (in listed order):
+ * * Attempt to remove the user from the aggregation.
+ * * If successful, proceed to decrement the count by 1 using transactions.
+ *
+ * @param snapshot the user data when the function was triggered.
+ * @param context the details of the function call.
+ * @param db the reference for interacting with the database.
+ */
 export const onDeleteUserAggregation = async (
   snapshot: firestore.DocumentSnapshot,
   context: EventContext,

@@ -5,8 +5,9 @@ import { COL_USERS, COL_MEMBERS } from '../constants';
 import { User, Member, CustomClaims } from '../models';
 
 /**
- * onCreateUser listens for a new sign-up in Firebase Authentication.
+ * onCreateUser listens for a user creation in Firebase Auth.
  *
+ * @remarks
  * Operations Procedure (in listed order):
  * * Create a database transaction.
  * * Queries the database for a member matching the same email address.

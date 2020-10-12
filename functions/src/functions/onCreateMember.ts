@@ -3,6 +3,16 @@ import { logger, EventContext } from 'firebase-functions';
 
 import { Member } from '../models';
 
+/**
+ * onCreateMember listens for a new document creation in `members` collection.
+ *
+ * @remarks
+ * This function will only add missing keys that can't be added as a user.
+ *
+ * @param snapshot the document snapshot when the function was triggered.
+ * @param context the details of the function call.
+ * @param db the reference for interacting with the database.
+ */
 export const onCreateMember = (
   snapshot: firestore.DocumentSnapshot,
   context: EventContext,

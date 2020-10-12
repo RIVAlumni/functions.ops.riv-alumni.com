@@ -37,6 +37,10 @@ const firestore = admin.firestore();
  */
 const DEPLOYMENT_REGION = 'asia-east2';
 
+/**
+ * onCreate Events
+ */
+
 export const createUser = functions
   .region(DEPLOYMENT_REGION)
   .auth.user()
@@ -57,15 +61,32 @@ export const createParticipation = functions
   .firestore.document('participations/{docId}')
   .onCreate((snap, ctx) => onCreateParticipation(snap, ctx, firestore));
 
+/**
+ * onCreate Aggregation Events
+ *
+ * @remarks
+ * Note: Aggregation functions usually consist of using Realtime DB
+ *       and Firestore to aggregate data. Check function paramter types
+ *       to verify where the data is being sent towards.
+ */
+
 export const createUserAggregation = functions
   .region(DEPLOYMENT_REGION)
   .firestore.document('users/{docId}')
   .onCreate((snap, ctx) => onCreateUserAggregation(snap, ctx, realtime));
 
+/**
+ * onDelete Events
+ */
+
 export const deleteUser = functions
   .region(DEPLOYMENT_REGION)
   .auth.user()
   .onDelete((user, ctx) => onDeleteUser(user, ctx, firestore));
+
+/**
+ * onDelete Aggregation Events
+ */
 
 export const deleteUserAggregation = functions
   .region(DEPLOYMENT_REGION)
