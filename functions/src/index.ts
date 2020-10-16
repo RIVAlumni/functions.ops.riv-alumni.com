@@ -5,27 +5,15 @@ import {
   onCreateUser,
   onCreateMember,
   onCreateEvent,
-  onCreateParticipation,
-  onCreateUserAggregation
+  onCreateParticipation
 } from './onCreate';
 
-import { onDeleteUser, onDeleteUserAggregation } from './onDelete';
+import { onDeleteUser } from './onDelete';
 
 /**
  * Initializes the entire `firebase-admin` library for use.
- *
- * @remarks
- * `databaseURL` is required to be set in order for Realtime Database services
- * to function properly. Removing it will result in function-wide failures.
  */
-admin.initializeApp({
-  databaseURL: 'https://rivalumniops.firebaseio.com'
-});
-
-/**
- * Realtime references the Firebase Realtime Database for operations.
- */
-const realtime = admin.database();
+admin.initializeApp();
 
 /**
  * Firestore references the Firebase Firestore Database for operations.
@@ -70,10 +58,10 @@ export const createParticipation = functions
  *       to verify where the data is being sent towards.
  */
 
-export const createUserAggregation = functions
-  .region(DEPLOYMENT_REGION)
-  .firestore.document('users/{docId}')
-  .onCreate((snap, ctx) => onCreateUserAggregation(snap, ctx, realtime));
+// export const createUserAggregation = functions
+//   .region(DEPLOYMENT_REGION)
+//   .firestore.document('users/{docId}')
+//   .onCreate((snap, ctx) => onCreateUserAggregation(snap, ctx, realtime));
 
 /**
  * onDelete Events
@@ -88,10 +76,10 @@ export const deleteUser = functions
  * onDelete Aggregation Events
  */
 
-export const deleteUserAggregation = functions
-  .region(DEPLOYMENT_REGION)
-  .firestore.document('users/{docId}')
-  .onDelete((snap, ctx) => onDeleteUserAggregation(snap, ctx, realtime));
+// export const deleteUserAggregation = functions
+//   .region(DEPLOYMENT_REGION)
+//   .firestore.document('users/{docId}')
+//   .onDelete((snap, ctx) => onDeleteUserAggregation(snap, ctx, realtime));
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript

@@ -6,8 +6,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // NEW RULES
-
     match /users/{userId} {
       // Allow users to get, create and update their own user document.
       allow get,
@@ -91,38 +89,6 @@ service cloud.firestore {
             create,
             update,
             delete: if getAccessLevel() >= 3;
-    }
-
-    // NEW RULES
-
-    match /aggregations/users {
-      // Privileged User
-      allow get: if getRole('Editor');
-      allow get, delete: if getRole('Administrator');
-    }
-
-    match /aggregations/members {
-      // Privileged User
-      allow get: if getRole('Editor');
-      allow get, delete: if getRole('Administrator');
-    }
-
-    match /aggregations/events {
-      // Non-Privileged User
-      allow get: if getRole('Alumni');
-
-      // Privileged User
-      allow get: if getRole('Editor');
-      allow get, delete: if getRole('Administrator');
-    }
-
-    match /aggregations/participations {
-      // Non-Privileged User
-      allow get: if getRole('Alumni');
-
-      // Privileged User
-      allow get: if getRole('Editor');
-      allow get, delete: if getRole('Administrator');
     }
 
     function getExistingData() {
