@@ -1,37 +1,37 @@
-/**
- * User represents an OAuth2 user signed into the application.
- *
- * @property [User ID]
- * Represents the registered auth user.
- *
- * @property [Email]
- * Represents the email registered by the auth user.
- *
- * @property [Photo URL]
- * Represents the profile picture attached by the auth user.
- *
- * @property [Display Name]
- * Represents the name registered by the auth user.
- *
- * @property [Membership ID]
- * Represents the related membership found in `members` collection.
- *
- * @property [refreshTime]
- * SYSTEM VALUE. Represents if an auth token refresh is required.
- *
- * @property [updatedAt]
- * SYSTEM VALUE. Represents the time when the document is updated.
- *
- * @property [createdAt]
- * SYSTEM VALUE. Represents the time when the document is created.
- */
+import { firestore } from 'firebase-admin';
+
 export interface User {
+  /**
+   * User identifier of the registered user.
+   */
   'User ID': string;
+  /**
+   * Email address of the registered user.
+   */
   'Email': string | null;
+  /**
+   * Profile picture of the registered user.
+   */
   'Photo URL': string | null;
+  /**
+   * Display Name of the registered user.
+   */
   'Display Name': string | null;
+  /**
+   * Membership document identifier of the registered user, with `null` being
+   * equivalent to "not a member".
+   */
   'Membership ID': string | null;
-  'refreshTime': FirebaseFirestore.FieldValue;
-  'updatedAt': FirebaseFirestore.FieldValue;
-  'createdAt': FirebaseFirestore.FieldValue;
+  /**
+   * Levels of access granted to the registered user.
+   */
+  'Access Level': number;
+  /**
+   * Timestamp of the last document update.
+   */
+  'updatedAt': firestore.FieldValue;
+  /**
+   * Timestamp of when the document is created.
+   */
+  'createdAt': firestore.FieldValue;
 }

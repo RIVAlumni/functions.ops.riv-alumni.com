@@ -1,8 +1,8 @@
 import { auth, firestore } from 'firebase-admin';
 import { logger, EventContext } from 'firebase-functions';
 
+import { User, Member } from '../models';
 import { COL_USERS, COL_MEMBERS } from '../constants';
-import { User, Member, CustomClaims } from '../models';
 
 /**
  * onCreateUser listens for a user creation in Firebase Auth.
@@ -11,7 +11,6 @@ import { User, Member, CustomClaims } from '../models';
  * Operations Procedure (in listed order):
  * * Queries the database for a member matching the same email address.
  * * Determines the user's access level / privileges.
- * * Sets the user custom claims with their determined access levels.
  * * Updates the user document with the determined details.
  *
  * @param user the object containing all the user information.
@@ -23,8 +22,8 @@ export const onCreateUser = async (
   event: EventContext,
   db: firestore.Firestore
 ) => {
+  let accessLevel: number = 0;
   let memberUid: string | null = null;
-  let claims: CustomClaims = { accessLevel: 0 };
 
   const userRef = db.doc(COL_USERS + user.uid);
   const memberRef = db
@@ -44,27 +43,19 @@ export const onCreateUser = async (
     throw new Error(e);
   }
 
-  if (memberUid) claims = { accessLevel: 1 };
-  if (user.email && user.email.endsWith('@riv-alumni.com'))
-    claims = { accessLevel: 2 };
+  if (memberUid) accessLevel = 1;
+  if (user.email && user.email.endsWith('@riv-alumni.com')) accessLevel = 2;
 
   const updatedUser: User = {
     'User ID': user.uid,
     'Email': user.email || null,
     'Photo URL': user.photoURL || null,
     'Display Name': user.displayName || null,
-    'Membership ID': memberUid,
-    'refreshTime': firestore.FieldValue.serverTimestamp(),
+    'Membership ID': memberUid || null,
+    'Access Level': accessLevel || 0,
     'updatedAt': firestore.FieldValue.serverTimestamp(),
     'createdAt': firestore.FieldValue.serverTimestamp()
   };
-
-  try {
-    await auth().setCustomUserClaims(user.uid, claims);
-  } catch (e) {
-    logger.error(e);
-    throw new Error(e);
-  }
 
   return userRef.set(updatedUser, { merge: true }).catch(logger.error);
 };
