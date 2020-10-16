@@ -21,9 +21,16 @@ admin.initializeApp();
 const firestore = admin.firestore();
 
 /**
- * DEPLOYMENT_REGION states the location of the deployed functions.
+ * DEPLOYMENT_REGION states the location of the deployed function.
  */
 const DEPLOYMENT_REGION = 'asia-east2';
+
+/**
+ * DEPLOYMENT_SETTINGS states the resource allocation of the deployed function.
+ */
+const DEPLOYMENT_SETTINGS: functions.DeploymentOptions = {
+  memory: '1GB'
+};
 
 /**
  * onCreate Events
@@ -31,21 +38,25 @@ const DEPLOYMENT_REGION = 'asia-east2';
 
 export const createUser = functions
   .region(DEPLOYMENT_REGION)
+  .runWith(DEPLOYMENT_SETTINGS)
   .auth.user()
   .onCreate((user, ctx) => onCreateUser(user, ctx, firestore));
 
 export const createMember = functions
   .region(DEPLOYMENT_REGION)
+  .runWith(DEPLOYMENT_SETTINGS)
   .firestore.document('members/{docId}')
   .onCreate((snap, ctx) => onCreateMember(snap, ctx, firestore));
 
 export const createEvent = functions
   .region(DEPLOYMENT_REGION)
+  .runWith(DEPLOYMENT_SETTINGS)
   .firestore.document('events/{docId}')
   .onCreate((snap, ctx) => onCreateEvent(snap, ctx, firestore));
 
 export const createParticipation = functions
   .region(DEPLOYMENT_REGION)
+  .runWith(DEPLOYMENT_SETTINGS)
   .firestore.document('participations/{docId}')
   .onCreate((snap, ctx) => onCreateParticipation(snap, ctx, firestore));
 
@@ -69,6 +80,7 @@ export const createParticipation = functions
 
 export const deleteUser = functions
   .region(DEPLOYMENT_REGION)
+  .runWith(DEPLOYMENT_SETTINGS)
   .auth.user()
   .onDelete((user, ctx) => onDeleteUser(user, ctx, firestore));
 
