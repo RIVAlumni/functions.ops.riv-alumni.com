@@ -188,6 +188,16 @@ service cloud.firestore {
                     && getAccessLevel() >= 3;
     }
 
+    match /aggregations/{aggregationId} {
+      allow get:  if isAuthenticated()
+                  && getAccessLevel() >= 2;
+      
+      allow list,
+            create,
+            update,
+            delete: if false;
+    }
+
     function isAuthenticated() {
       return request.auth != null;
     }
