@@ -6,89 +6,189 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Users collection contains all the user information used to identify
+    // and authorize operations performed on the dashboard.
+    //
+    // GET      If the document belongs to authenticated user or authenticated
+    //          user has an access level of 2 (Editor) or higher.
+    //
+    // LIST     If authenticated user has an access level of 2 (Editor) or
+    //          higher and the query limit not exceeding 10 documents at once.
+    //
+    // UPDATE   If the document belongs to authenticated user or authenticated
+    //          user has an access level of 2 (Editor) or higher. And the locked
+    //          document data not being modified.
+    //
+    // CREATE   Not permitted. Handled by Cloud Functions.
+    // DELETE   Not permitted. Handled by Cloud Functions.
     match /users/{userId} {
-      // Allow users to get, create and update their own user document.
-      allow get,
-            create,
-            update: if request.auth.uid == userId;
+      allow get:  if isAuthenticated()
+                  && request.auth.uid == userId;
 
-      // Allow users with access level 2 and higher.
       allow get,
-            list,
-            update: if getAccessLevel() >= 2;
+            list: if isAuthenticated()
+                  && getAccessLevel() >= 2
+                  && request.query.limit <= 10;
 
-      allow delete: if false;
+      allow update: if isAuthenticated()
+                    && getAccessLevel() >= 2
+                    && request.auth.uid == docId
+                    && getIncomingData()['User ID'] == getExistingData()['User ID']
+                    && getIncomingData()['Access Level'] == getExistingData()['Access Level']
+                    && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
+                    && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
+
+      allow create,
+            delete: if false;
     }
 
+    // NEEDS DOUBLE CHECKING
+    // Remarks collection contains all alumni event performance records used
+    // for future manpower and participation selection.
+    //
+    // GET,
+    // CREATE,
+    // UPDATE   If the authenticated user has an access level of 2 (Editor) or
+    //          higher.
+    // LIST     If the authenticated user has an access level of 2 (Editor) or
+    //          higher and the query limit not exceeding 10 documents at once.
+    // DELETE   If the authenticated user has an access level of 3
+    //          (Administrator) or higher.
     match /remarks/{remarkId} {
-      // Allow users with access level 2 and higher.
       allow get,
             list,
             create,
-            update: if getAccessLevel() >= 2;
+            update: if isAuthenticated()
+                    && getAccessLevel() >= 2
+                    && request.query.limit <= 10;
 
-      // Allow users with access level 3 and higher.
-      allow get,
-            list,
-            create,
-            update,
-            delete: if getAccessLevel() >= 3;
+      allow delete: if isAuthenticated()
+                    && getAccessLevel() >= 3;
     }
 
+    // Members collection contains all the personal identifiable information of
+    // alumni used for identifying an alumnus or contacting emergency contacts.
+    //
+    // GET      If the document belongs to the authenticated user or the
+    //          authenticated user has an access level of 2 (Editor) or higher.
+    //
+    // LIST     If the authenticated user has an access level of 2 (Editor) or
+    //          higher and the query limit not exceeding 10 documents at once.
+    //
+    // CREATE   If the authenticated user has an access level of 2 (Editor) or
+    //          higher.
+    //
+    // UPDATE   If the document belongs to the authenticated user or the
+    //          authenticated user has an access level of 2 (Editor) or higher.
+    //          And the locked document data not being modified.
+    //
+    // DELETE   If the authenticated user has an access level of 3 (Administrator)
+    //          or higher.
     match /members/{memberId} {
-      // Allow users to get, and update their membership document.
-      allow get,
-            update: if getUserData()['Membership ID'] == memberId;
+      allow get:  if isAuthenticated()
+                  && getUserData()['Membership ID'] == memberId;
 
-      // Allow users with access level 2 and higher.
       allow get,
-            list,
-            create,
-            update: if getAccessLevel() >= 2;
+            list: if isAuthenticated()
+                  && getAccessLevel() >= 2
+                  && request.query.limit <= 10;
 
-      // Allow users with access level 3 and higher.
-      allow get,
-            list,
-            create,
-            update,
-            delete: if getAccessLevel() >= 3;
+      allow create: if isAuthenticated()
+                    && getAccessLevel() >= 2;
+
+      allow update: if isAuthenticated()
+                    && getAccessLevel() >= 2
+                    && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
+                    && getIncomingData()['Graduating Class'] == getExistingData()['Graduating Class']
+                    && getIncomingData()['Graduating Year'] == getExistingData()['Graduating Year']
+                    && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
+                    && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
+
+      allow delete: if isAuthenticated()
+                    && getAccessLevel() >= 3;
     }
 
+    // Events collection contains all the past and upcoming events.
+    //
+    // GET      If the authenticated user has an access level of 1 (Alumni) or
+    //          higher.
+    //
+    // LIST     If the authenticated user has an access level of 1 (Alumni) or
+    //          higher and the query limit not exceeding 10 documents at once.
+    //
+    // CREATE   If the authenticated user has an access level of 2 (Editor) or
+    //          higher.
+    //
+    // UPDATE   If the authenticated user has an access level of 2 (Editor) or
+    //          higher and having the locked document data not being modified.
+    //
+    // DELETE   If the authenticated user has an access level of 3 (Administrator)
+    //          or higher.
     match /events/{eventId} {
-      // Allow users with access level 1 and higher.
-      allow get,
-            list: if getAccessLevel() >= 1;
+      allow get:  if isAuthenticated()
+                  && getAccessLevel() >= 1;
 
-      // Allow users with access level 2 and higher.
-      allow get,
-            list,
-            create,
-            update: if getAccessLevel() >= 2;
-      
-      // Allow users with access level 3 and higher.
-      allow get,
-            list,
-            create,
-            update,
-            delete: if getAccessLevel() >= 3;
+      allow list: if isAuthenticated()
+                  && getAccessLevel() >= 1
+                  && request.query.limit <= 10;
+
+      allow create: if isAuthenticated()
+                    && getAccessLevel() >= 2;
+
+      allow update: if isAuthenticated()
+                    && getAccessLevel() >= 2
+                    && getIncomingData()['Event Code'] == getExistingData()['Event Code']
+                    && getIncomingData()['Event Year'] == getExistingData()['Event Year']
+                    && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
+                    && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
+
+      allow delete: if isAuthenticated()
+                    && getAccessLevel() >= 3;
     }
 
+    // Participations collection contains all records of alumni participation.
+    // Used for identifying events participated and collating total VIA hours.
+    //
+    // GET      If the document belongs to the authenticated user or the
+    //          authenticated user has an access level of 2 (Editor) or higher.
+    //
+    // LIST     If the document belongs to the authenticated user or the
+    //          authenticated user has an access level of 2 (Editor) or higher.
+    //          And the query limit not exceeding 10 documents at once.
+    //
+    // CREATE   If the authenticated user has an access level of 2 (Editor) or
+    //          higher.
+    //
+    // UPDATE   If the authenticated user has an access level of 2 (Editor) or
+    //          higher and the locked document data not being modified.
+    //
+    // DELETE   If the authenticated user has an access level of 3 (Administrator)
+    //          or higher.
     match /participations/{participationId} {
-      // Allow users to get their own participation document.
-      allow get: if getExistingData()['Membership ID'] == getUserData()['Membership ID'];
+      allow get:  if isAuthenticated()
+                  && getExistingData()['Membership ID'] == getUserData()['Membership ID'];
 
-      // Allow users with access level 2 and higher.
       allow get,
-            list,
-            create,
-            update: if getAccessLevel() >= 2;
+            list: if isAuthenticated()
+                  && getAccessLevel() >= 2
+                  && request.query.limit <= 10;
 
-      // Allow users with access level 3 and higher.
-      allow get,
-            list,
-            create,
-            update,
-            delete: if getAccessLevel() >= 3;
+      allow create: if isAuthenticated()
+                    && getAccessLevel() >= 2;
+
+      allow update: if isAuthenticated()
+                    && getAccessLevel() >= 2
+                    && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
+                    && getIncomingData()['Event Code'] == getExistingData()['Event Code']
+                    && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
+                    && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
+
+      allow delete: if isAuthenticated()
+                    && getAccessLevel() >= 3;
+    }
+
+    function isAuthenticated() {
+      return request.auth != null;
     }
 
     function getExistingData() {
@@ -99,16 +199,8 @@ service cloud.firestore {
       return request.resource.data;
     }
 
-    function getAccessLevel() {
-      return request.auth.token['accessLevel']
-    }
-
     function getUserData() {
     	return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-    }
-
-    function getRole(role) {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data['Roles'][role]
     }
   }
 }

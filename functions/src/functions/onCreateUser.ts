@@ -39,12 +39,10 @@ export const onCreateUser = async (
       if (member['Email'] === user.email) memberUid = doc.id;
     });
   } catch (e) {
-    logger.error(e);
-    throw new Error(e);
+    console.error(new Error(e));
   }
 
   if (memberUid) accessLevel = 1;
-  if (user.email && user.email.endsWith('@riv-alumni.com')) accessLevel = 2;
 
   const updatedUser: User = {
     'User ID': user.uid,
