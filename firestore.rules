@@ -36,6 +36,16 @@ service cloud.firestore {
                     && getIncomingData()['User ID'] == getExistingData()['User ID']
                     && getIncomingData()['Email'] == getExistingData()['Email']
                     && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
+                    && getIncomingData()['Access Level'] == getExistingData()['Access Level']
+                    && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
+                    && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
+
+      allow update: if isAuthenticated()
+                    && getAccessLevel() >= 3
+                    && request.auth.uid == userId
+                    && getIncomingData()['User ID'] == getExistingData()['User ID']
+                    && getIncomingData()['Email'] == getExistingData()['Email']
+                    && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
                     && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
                     && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
 
