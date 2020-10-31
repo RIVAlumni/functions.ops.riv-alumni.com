@@ -2,10 +2,12 @@ import { firestore } from 'firebase-admin';
 
 export interface User {
   /**
+   * @readonly
    * User identifier of the registered user.
    */
   'User ID': string;
   /**
+   * @readonly
    * Email address of the registered user.
    */
   'Email': string | null;
@@ -18,6 +20,7 @@ export interface User {
    */
   'Display Name': string | null;
   /**
+   * @readonly
    * Membership document identifier of the registered user, with `null` being
    * equivalent to "not a member".
    */
@@ -27,10 +30,12 @@ export interface User {
    */
   'Access Level': number;
   /**
+   * @readonly
    * Timestamp of the last document update.
    */
   'updatedAt': firestore.FieldValue;
   /**
+   * @readonly
    * Timestamp of when the document is created.
    */
   'createdAt': firestore.FieldValue;

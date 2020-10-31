@@ -34,7 +34,8 @@ service cloud.firestore {
                     && getAccessLevel() >= 2
                     && request.auth.uid == docId
                     && getIncomingData()['User ID'] == getExistingData()['User ID']
-                    && getIncomingData()['Access Level'] == getExistingData()['Access Level']
+                    && getIncomingData()['Email'] == getExistingData()['Email']
+                    && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
                     && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
                     && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
 
