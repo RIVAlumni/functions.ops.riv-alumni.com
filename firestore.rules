@@ -32,7 +32,7 @@ service cloud.firestore {
 
       allow update: if isAuthenticated()
                     && getAccessLevel() >= 2
-                    && request.auth.uid == docId
+                    && request.auth.uid == userId
                     && getIncomingData()['User ID'] == getExistingData()['User ID']
                     && getIncomingData()['Email'] == getExistingData()['Email']
                     && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
@@ -212,6 +212,10 @@ service cloud.firestore {
 
     function getUserData() {
     	return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function getAccessLevel() {
+      return getUserData()['Access Level'];
     }
   }
 }
