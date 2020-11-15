@@ -4,3 +4,5 @@ export * from './Event';
 export * from './Participation';
 
 export * from './UserAggregation';
+
+export * from './AccessLevels';

@@ -1,5 +1,7 @@
 import { firestore } from 'firebase-admin';
 
+import { UserAccessLevels } from './AccessLevels';
+
 export interface User {
   /**
    * @readonly
@@ -28,7 +30,7 @@ export interface User {
   /**
    * Levels of access granted to the registered user.
    */
-  'Access Level': number;
+  'Access Level': UserAccessLevels;
   /**
    * @readonly
    * Timestamp of the last document update.
