@@ -182,6 +182,10 @@ service cloud.firestore {
     match /participations/{participationId} {
       allow get:  if isAuthenticated()
                   && getExistingData()['Membership ID'] == getUserData()['Membership ID'];
+      
+      allow list: if isAuthenticated()
+                  && getExistingData()['Membership ID'] == getUserData()['Membership ID']
+                  && request.query.limit <= 10;
 
       allow get:  if isAuthenticated()
                   && getAccessLevel() >= 2;
