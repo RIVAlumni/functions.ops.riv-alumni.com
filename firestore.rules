@@ -141,7 +141,8 @@ service cloud.firestore {
     //          or higher.
     match /events/{eventId} {
       allow get:  if isAuthenticated()
-                  && getAccessLevel() >= 1;
+                  && getAccessLevel() >= 1
+                  && getUserData()['Membership ID'] != null;
 
       allow list: if isAuthenticated()
                   && getAccessLevel() >= 1
