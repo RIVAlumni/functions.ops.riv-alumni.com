@@ -193,7 +193,7 @@ service cloud.firestore {
 
       allow list: if isAuthenticated()
                   && getAccessLevel() >= 2
-                  && request.query.limit <= 10;
+                  && request.query.limit <= 15;
 
       allow create: if isAuthenticated()
                     && getAccessLevel() >= 2;
