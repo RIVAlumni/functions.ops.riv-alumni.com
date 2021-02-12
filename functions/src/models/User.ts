@@ -38,7 +38,7 @@ export interface User {
   'updatedAt': firestore.FieldValue;
   /**
    * @readonly
-   * Timestamp of when the document is created.
+   * Timestamp of when the document was created.
    */
   'createdAt': firestore.FieldValue;
 }

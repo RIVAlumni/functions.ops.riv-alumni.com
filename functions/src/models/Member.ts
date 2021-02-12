@@ -1,62 +1,68 @@
-/**
- * Member represents an alumni that has joined us for activities/events before.
- *
- * @property [Membership ID]
- * Represents the unique identifier of the registered member.
- *
- * @property [Full Name]
- * Represents the legal name of the member.
- *
- * @property [Gender]
- * Represents the sex of the member.
- *
- * @property [Email]
- * Represents the contactable email address of the member.
- *
- * @property [Contact Number]
- * Represents the contactable phone number of the member.
- *
- * @property [Home Number]
- * Represents the contactable landline that can be used for contacting
- * unreachable emergency contacts.
- *
- * @property [Current School]
- * Represents the school that the member is currently studying at.
- *
- * @property [Graduating Class]
- * Represents the class that the member has graduated from.
- *
- * @property [Graduating Year]
- * Represents the year that the member has graduated from.
- *
- * @property [Name of Next-Of-Kin]
- * Represents the contactable addressee during emergency situations.
- *
- * @property [Relationship with Next-Of-Kin]
- * Represents the relationship that the member has with the caretaker.
- *
- * @property [Contact Number of Next-Of-Kin]
- * Represents the contactable phone number of the caretaker.
- *
- * @property [updatedAt]
- * SYSTEM VALUE. Represents the timestamp when the document is updated.
- *
- * @property [createdAt]
- * SYSTEM VALUE. Represents the timestamp when the document is created.
- */
+import { firestore } from 'firebase-admin';
+
 export interface Member {
+  /**
+   * @readonly
+   * Unique membership identifier.
+   */
   'Membership ID': string;
+  /**
+   * Legal full name of the alumni.
+   */
   'Full Name': string;
+  /**
+   * Legal gender of the alumni.
+   */
   'Gender': string;
+  /**
+   * Email address of the alumni.
+   *
+   * @remarks
+   * Email addresses are used for identifying and linking pre-existing/new
+   * user accounts to a membership account via a secured environment in
+   * Cloud Functions.
+   */
   'Email': string | null;
+  /**
+   * Contactable phone number of the alumni.
+   */
   'Contact Number': number;
+  /**
+   * Secondary contactable phone number of the alumni.
+   */
   'Home Number': number | null;
+  /**
+   * Current school of study of the alumni.
+   */
   'Current School': string | null;
+  /**
+   * Graduating class of the alumni.
+   */
   'Graduating Class': string;
+  /**
+   * Graduating year of the alumni.
+   */
   'Graduating Year': number;
-  'Name of Next-Of-Kin': string;
-  'Relationship with Next-Of-Kin': string;
-  'Contact Number of Next-Of-Kin': number;
-  'updatedAt': FirebaseFirestore.FieldValue;
-  'createdAt': FirebaseFirestore.FieldValue;
+  /**
+   * Name of the parent/guardian of the alumni.
+   */
+  'Name Of Next-Of-Kin': string;
+  /**
+   * Relationship of the parent/guardian with the alumni.
+   */
+  'Relationship With Next-Of-Kin': string;
+  /**
+   * Contactable number of the parent/guardian of the alumni.
+   */
+  'Contact Number Of Next-Of-Kin': number;
+  /**
+   * @readonly
+   * Timestamp of the last document update.
+   */
+  'updatedAt': firestore.FieldValue;
+  /**
+   * @readonly
+   * Timestamp of when the document was created.
+   */
+  'createdAt': firestore.FieldValue;
 }
