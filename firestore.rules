@@ -30,7 +30,7 @@ service cloud.firestore {
 
       allow list: if isAuthenticated()
                   && getAccessLevel() >= 2
-                  && request.query.limit <= 10;
+                  && request.query.limit <= QUERY_LIMIT();
 
       allow update: if isAuthenticated()
                     && getAccessLevel() >= 2
@@ -38,7 +38,7 @@ service cloud.firestore {
                     && getIncomingData()['User ID'] == getExistingData()['User ID']
                     && getIncomingData()['Email'] == getExistingData()['Email']
                     && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
-                    && getIncomingData()['Access Level'] == getExistingData()['Access Level']
+                    && getIncomingData()['Access Level'] <= getExistingData()['Access Level']
                     && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
                     && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
 
@@ -73,7 +73,7 @@ service cloud.firestore {
             create,
             update: if isAuthenticated()
                     && getAccessLevel() >= 2
-                    && request.query.limit <= 10;
+                    && request.query.limit <= QUERY_LIMIT();
 
       allow delete: if isAuthenticated()
                     && getAccessLevel() >= 3;
@@ -106,7 +106,7 @@ service cloud.firestore {
 
       allow list: if isAuthenticated()
                   && getAccessLevel() >= 2
-                  && request.query.limit <= 15;
+                  && request.query.limit <= QUERY_LIMIT();
 
       allow create: if isAuthenticated()
                     && getAccessLevel() >= 2;
@@ -146,7 +146,7 @@ service cloud.firestore {
 
       allow list: if isAuthenticated()
                   && getAccessLevel() >= 1
-                  && request.query.limit <= 10;
+                  && request.query.limit <= QUERY_LIMIT();
 
       allow create: if isAuthenticated()
                     && getAccessLevel() >= 2;
@@ -186,14 +186,14 @@ service cloud.firestore {
       
       allow list: if isAuthenticated()
                   && getExistingData()['Membership ID'] == getUserData()['Membership ID']
-                  && request.query.limit <= 10;
+                  && request.query.limit <= QUERY_LIMIT();
 
       allow get:  if isAuthenticated()
                   && getAccessLevel() >= 2;
 
       allow list: if isAuthenticated()
                   && getAccessLevel() >= 2
-                  && request.query.limit <= 15;
+                  && request.query.limit <= QUERY_LIMIT();
 
       allow create: if isAuthenticated()
                     && getAccessLevel() >= 2;
@@ -241,6 +241,10 @@ service cloud.firestore {
 
     function getAccessLevel() {
       return getUserData()['Access Level'];
+    }
+
+    function QUERY_LIMIT() {
+      return 15;
     }
   }
 }
