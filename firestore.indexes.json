@@ -1,15 +1,15 @@
 {
   "indexes": [
     {
-      "collectionGroup": "events",
+      "collectionGroup": "members",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "`Event Code`",
+          "fieldPath": "`Full Name`",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "`Event Year`",
+          "fieldPath": "`Graduating Year`",
           "order": "DESCENDING"
         }
       ]
@@ -23,21 +23,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "`Full Name`",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "participations",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "`Event Code`",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "`Full Name`",
+          "fieldPath": "`VIA Hours`",
           "order": "DESCENDING"
         }
       ]
@@ -47,12 +33,12 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "`Member ID`",
+          "fieldPath": "`Membership ID`",
           "order": "ASCENDING"
         },
         {
           "fieldPath": "`Event Code`",
-          "order": "ASCENDING"
+          "order": "DESCENDING"
         }
       ]
     },
@@ -61,8 +47,8 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "`Member ID`",
-          "order": "ASCENDING"
+          "fieldPath": "`VIA Hours`",
+          "order": "DESCENDING"
         },
         {
           "fieldPath": "`Event Code`",
