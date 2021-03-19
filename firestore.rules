@@ -2,57 +2,65 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Enforce a global whitelist-only rule on all documents.
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // Users collection contains all the user information used to identify
-    // and authorize operations performed on the dashboard.
-    //
-    // GET      If the document belongs to authenticated user or authenticated
-    //          user has an access level of 2 (Editor) or higher.
-    //
-    // LIST     If authenticated user has an access level of 2 (Editor) or
-    //          higher and the query limit not exceeding 10 documents at once.
-    //
-    // UPDATE   If the document belongs to authenticated user or authenticated
-    //          user has an access level of 2 (Editor) or higher. And the locked
-    //          document data not being modified.
-    //
-    // CREATE   Not permitted. Handled by Cloud Functions.
-    // DELETE   Not permitted. Handled by Cloud Functions.
-    match /users/{userId} {
+    match /users/{docId} {
+      // Allow GET, if the document belongs to the authenticated user.
       allow get:  if isAuthenticated()
-                  && request.auth.uid == userId;
+                  && request.auth.uid == docId;
 
+      // Allow GET, if the authenticated user has an access level of 2 or more.
       allow get:  if isAuthenticated()
                   && getAccessLevel() >= 2;
 
+      // Allow LIST, if the authenticated user has an access level of 2 or more,
+      // and the request limit <= QUERY_LIMIT.
+      // Refer to function QUERY_LIMIT.
       allow list: if isAuthenticated()
                   && getAccessLevel() >= 2
                   && request.query.limit <= QUERY_LIMIT();
 
-      allow update: if isAuthenticated()
-                    && getAccessLevel() >= 2
-                    && request.auth.uid == userId
-                    && getIncomingData()['User ID'] == getExistingData()['User ID']
-                    && getIncomingData()['Email'] == getExistingData()['Email']
-                    && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
-                    && getIncomingData()['Access Level'] <= getExistingData()['Access Level']
-                    && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
-                    && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
-
+      // Allow UPDATE, if
+      // * the user is authenticated;
+      // * the user has an access level of 3 or more;
+      // * the update request only has the field `Access Level`;
+      // * the field value `Access Level` is the data type of int;
+      // * the request field `Access Level` is lower than the resource field;
       allow update: if isAuthenticated()
                     && getAccessLevel() >= 3
-                    && request.auth.uid == userId
+                    && getIncomingData().keys().hasOnly([
+                      'User ID',
+                      'Email',
+                      'Photo URL',
+                      'Display Name',
+                      'Membership ID',
+                      'Access Level',
+                      'updatedAt',
+                      'createdAt'
+                    ])
+                    && getIncomingData()['User ID'] is string
+                    && getIncomingData()['Email'] is string
+                    && getIncomingData()['Photo URL'] is string
+                    && getIncomingData()['Display Name'] is string
+                    && (getIncomingData()['Membership ID'] is string
+                    || getIncomingData()['Membership ID'] == null)
+                    && getIncomingData()['Access Level'] is int
+                    && getIncomingData()['updatedAt'] is timestamp
+                    && getIncomingData()['createdAt'] is timestamp
                     && getIncomingData()['User ID'] == getExistingData()['User ID']
                     && getIncomingData()['Email'] == getExistingData()['Email']
+                    && getIncomingData()['Photo URL'] == getExistingData()['Photo URL']
+                    && getIncomingData()['Display Name'] == getExistingData()['Display Name']
                     && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
+                    && getIncomingData()['Access Level'] < getExistingData()['Access Level']
                     && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
                     && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
 
-      allow create,
-            delete: if false;
+      // Deny CREATE and DELETE operations; handled by Cloud Functions.
+      allow create, delete: if false;
     }
 
     // NEEDS DOUBLE CHECKING
@@ -183,7 +191,7 @@ service cloud.firestore {
     match /participations/{participationId} {
       allow get:  if isAuthenticated()
                   && getExistingData()['Membership ID'] == getUserData()['Membership ID'];
-      
+
       allow list: if isAuthenticated()
                   && getExistingData()['Membership ID'] == getUserData()['Membership ID']
                   && request.query.limit <= QUERY_LIMIT();
