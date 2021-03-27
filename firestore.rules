@@ -23,6 +23,15 @@ service cloud.firestore {
                   && getAccessLevel() >= 2
                   && request.query.limit <= QUERY_LIMIT();
 
+      function verifyUpdate() {
+        let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+        let validChange = affectedKeys.hasOnly(['Access Level']);
+
+        return  validChange
+                && getIncomingData()['Access Level'] is int
+                && getIncomingData()['Access Level'] <= getExistingData()['Access Level'];
+      }
+
       // Allow UPDATE, if
       // * the user is authenticated;
       // * the user has an access level of 3 or more;
@@ -31,33 +40,7 @@ service cloud.firestore {
       // * the request field `Access Level` is lower than the resource field;
       allow update: if isAuthenticated()
                     && getAccessLevel() >= 3
-                    && getIncomingData().keys().hasOnly([
-                      'User ID',
-                      'Email',
-                      'Photo URL',
-                      'Display Name',
-                      'Membership ID',
-                      'Access Level',
-                      'updatedAt',
-                      'createdAt'
-                    ])
-                    && getIncomingData()['User ID'] is string
-                    && getIncomingData()['Email'] is string
-                    && getIncomingData()['Photo URL'] is string
-                    && getIncomingData()['Display Name'] is string
-                    && (getIncomingData()['Membership ID'] is string
-                    || getIncomingData()['Membership ID'] == null)
-                    && getIncomingData()['Access Level'] is int
-                    && getIncomingData()['updatedAt'] is timestamp
-                    && getIncomingData()['createdAt'] is timestamp
-                    && getIncomingData()['User ID'] == getExistingData()['User ID']
-                    && getIncomingData()['Email'] == getExistingData()['Email']
-                    && getIncomingData()['Photo URL'] == getExistingData()['Photo URL']
-                    && getIncomingData()['Display Name'] == getExistingData()['Display Name']
-                    && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
-                    && getIncomingData()['Access Level'] < getExistingData()['Access Level']
-                    && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
-                    && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
+                    && verifyUpdate();
 
       // Deny CREATE and DELETE operations; handled by Cloud Functions.
       allow create, delete: if false;
