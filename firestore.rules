@@ -88,30 +88,6 @@ service cloud.firestore {
       }
     }
 
-    // NEEDS DOUBLE CHECKING
-    // Remarks collection contains all alumni event performance records used
-    // for future manpower and participation selection.
-    //
-    // GET,
-    // CREATE,
-    // UPDATE   If the authenticated user has an access level of 2 (Editor) or
-    //          higher.
-    // LIST     If the authenticated user has an access level of 2 (Editor) or
-    //          higher and the query limit not exceeding 10 documents at once.
-    // DELETE   If the authenticated user has an access level of 3
-    //          (Administrator) or higher.
-    match /remarks/{remarkId} {
-      allow get,
-            list,
-            create,
-            update: if isAuthenticated()
-                    && getAccessLevel() >= 2
-                    && request.query.limit <= QUERY_LIMIT();
-
-      allow delete: if isAuthenticated()
-                    && getAccessLevel() >= 3;
-    }
-
     // Members collection contains all the personal identifiable information of
     // alumni used for identifying an alumnus or contacting emergency contacts.
     //
