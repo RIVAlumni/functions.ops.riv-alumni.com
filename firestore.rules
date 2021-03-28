@@ -21,16 +21,7 @@ service cloud.firestore {
       // Refer to function QUERY_LIMIT.
       allow list: if isAuthenticated()
                   && getAccessLevel() >= 2
-                  && request.query.limit <= QUERY_LIMIT();
-
-      function verifyUpdate() {
-        let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
-        let validChange = affectedKeys.hasOnly(['Access Level']);
-
-        return  validChange
-                && getIncomingData()['Access Level'] is int
-                && getIncomingData()['Access Level'] <= getExistingData()['Access Level'];
-      }
+                  && isWithinQueryLimit();
 
       // Allow UPDATE, if
       // * the user is authenticated;
@@ -40,10 +31,61 @@ service cloud.firestore {
       // * the request field `Access Level` is lower than the resource field;
       allow update: if isAuthenticated()
                     && getAccessLevel() >= 3
-                    && verifyUpdate();
+                    && isValidUpdate();
 
-      // Deny CREATE and DELETE operations; handled by Cloud Functions.
-      allow create, delete: if false;
+      // Allow CREATE, if
+      // * the user is authenticated;
+      // * the document belongs to the user;
+      // * the document structure matches the data model;
+      // * the field `User ID` is of type string;
+      // * the field `Email` is of type string;
+      // * the field `Photo URL` is of type string;
+      // * the field `Display Name` is of type string;
+      // * the field `Access Level` is of type int;
+      //
+      // * the field `User ID` == the user uid;
+      // * the field `Email` == the user email;
+      // * the field `Display Name` == user name;
+      // * the field `Membership ID` == null;
+      // * the field `Access Level` == 0;
+      allow create: if isAuthenticated()
+                    && isValidCreate();
+
+      // Deny DELETE operations; handled by Cloud Functions.
+      allow delete: if false;
+
+      function isValidUpdate() {
+        let affectedKeys = getIncomingData().diff(resource.data).affectedKeys();
+        return  affectedKeys.hasOnly(['Access Level'])
+                && getIncomingData()['Access Level'] is int
+                && getIncomingData()['Access Level'] <= getExistingData()['Access Level'];
+      }
+
+      function isValidCreate() {
+        let authUser = request.auth;
+        let allowedKeys = [
+          'User ID',
+          'Email',
+          'Photo URL',
+          'Display Name',
+          'Membership ID',
+          'Access Level'
+        ];
+
+        return  docId == authUser.uid
+                && getIncomingData().keys().hasOnly(allowedKeys)
+                && getIncomingData()['User ID'] is string
+                && getIncomingData()['Email'] is string
+                && getIncomingData()['Photo URL'] is string
+                && getIncomingData()['Display Name'] is string
+                && getIncomingData()['Access Level'] is int
+                && getIncomingData()['User ID'] == authUser.uid
+                && getIncomingData()['Email'] == authUser.token.email
+                && getIncomingData()['Photo URL'] != ''
+                && getIncomingData()['Display Name'] == authUser.token.name
+                && getIncomingData()['Membership ID'] == null
+                && getIncomingData()['Access Level'] == 0;
+      }
     }
 
     // NEEDS DOUBLE CHECKING
@@ -232,6 +274,10 @@ service cloud.firestore {
 
     function getAccessLevel() {
       return getUserData()['Access Level'];
+    }
+
+    function isWithinQueryLimit() {
+      return request.query.limit <= 15;
     }
 
     function QUERY_LIMIT() {
