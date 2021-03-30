@@ -832,6 +832,11 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
+better-firebase-functions@^3.4.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/better-firebase-functions/-/better-firebase-functions-3.4.1.tgz#80a3baf7b576a776e3f69f11c6d36fb0d2f7abbd"
+  integrity sha512-EniLpuXVm1chsJcxgQ1C8+enghK40exDQWKKxWpY+mJzUNP3TVShpKOlrTf+C2/QmJYs3mzxEHA3jgSOhjMe3w==
+
 brace-expansion@^1.1.7:
   version "1.1.11"
   resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.11.tgz#3c7fcbf529d87226f3d2f52b966ff5271eb441dd"

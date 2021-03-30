@@ -4,3 +4,4 @@ export * from './event';
 export * from './participation';
 
 export * from './metadata';
+export * from './aggregations';

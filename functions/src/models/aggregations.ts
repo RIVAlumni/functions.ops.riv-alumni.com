@@ -1,15 +1,17 @@
+import { firestore } from 'firebase-admin';
+
 export interface UserAggregation {
-  usersCount: number;
+  usersCount: firestore.FieldValue;
 }
 
 export interface MemberAggregation {
-  membersCount: number;
+  membersCount: firestore.FieldValue;
 }
 
 export interface EventAggregation {
-  eventsCount: number;
+  eventsCount: firestore.FieldValue;
 }
 
 export interface ParticipationAggregation {
-  participationsCount: number;
+  participationsCount: firestore.FieldValue;
 }
