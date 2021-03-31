@@ -2,49 +2,75 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
 import { User, UserAccessLevels, UserAggregation } from '../../models';
-import { DEPLOYMENT_REGION, DEPLOYMENT_SETTINGS } from '../../constants';
+import {
+  REF_AGN_USERS_DOC,
+  // DEPLOYMENT_REGION,
+  // DEPLOYMENT_SETTINGS,
+} from '../../constants';
 
-const firestore = admin.firestore;
-const batch = firestore().batch();
-const ref = firestore().collection('members');
-const aggregationRef = firestore().doc('aggregations/users');
+const firestore = admin.firestore();
+const { FieldValue } = admin.firestore;
 
-export default functions
-  .region(DEPLOYMENT_REGION)
-  .runWith(DEPLOYMENT_SETTINGS)
-  .firestore.document('users/{docId}')
+const batch = firestore.batch();
+const membersRef = firestore.collection('members');
+const aggregationsRef = firestore.doc(REF_AGN_USERS_DOC);
+
+export default functions.firestore
+  .document('/users/{docId}/')
   .onCreate(async (snapshot) => {
-    const data = snapshot.data() as User;
-    const query = ref.where('Email', '==', data['Email']).limit(1);
+    /**
+     * Convert snapshot into document data.
+     */
+    const snapshotData = snapshot.data() as User;
+
+    /**
+     * Build query to get link membership profile.
+     */
+    const query = membersRef
+      .where('Email', '==', snapshotData['Email'])
+      .limit(1);
 
     try {
+      /**
+       * Get results from query and map to result array.
+       */
       const result = (await query.get()).docs;
 
+      /**
+       * Check if the result array is not empty.
+       */
       if (result.length && result[0]) {
         const resultId = result[0].id;
 
-        const updateData: User = {
-          'User ID': data['User ID'],
-          'Email': data['Email'],
-          'Photo URL': data['Photo URL'],
-          'Display Name': data['Display Name'],
+        const updatedUserData: User = {
+          'User ID': snapshotData['User ID'],
+          'Email': snapshotData['Email'],
+          'Photo URL': snapshotData['Photo URL'],
+          'Display Name': snapshotData['Display Name'],
           'Membership ID': resultId,
           'Access Level': Number(UserAccessLevels.Alumni),
-          'updatedAt': firestore.FieldValue.serverTimestamp(),
-          'createdAt': data['createdAt'],
+          'updatedAt': FieldValue.serverTimestamp(),
+          'createdAt': snapshotData['createdAt'],
         };
 
-        batch.set(snapshot.ref, updateData, { merge: true });
+        batch.set(snapshot.ref, updatedUserData, { merge: true });
       }
     } catch (e) {
       console.error(new Error(e));
     }
 
+    /**
+     * Increase `users` aggregation count by 1.
+     *
+     * @remarks
+     * Updating the aggregation must still continue even if updating
+     * the user document fails.
+     */
     const aggregation: UserAggregation = {
-      usersCount: firestore.FieldValue.increment(1),
+      usersCount: FieldValue.increment(1),
     };
 
-    batch.set(aggregationRef, aggregation, { merge: true });
+    batch.set(aggregationsRef, aggregation, { merge: true });
 
     return batch.commit();
   });
