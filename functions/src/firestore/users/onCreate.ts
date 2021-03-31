@@ -3,16 +3,17 @@ import * as functions from 'firebase-functions';
 
 import { User, UserAccessLevels, UserAggregation } from '../../models';
 import {
-  REF_AGN_USERS_DOC,
   DEPLOYMENT_REGION,
   DEPLOYMENT_SETTINGS,
+  REF_MEMBERS_COL,
+  REF_AGN_USERS_DOC,
 } from '../../constants';
 
 const firestore = admin.firestore();
 const { FieldValue } = admin.firestore;
 
 const batch = firestore.batch();
-const membersRef = firestore.collection('members');
+const membersRef = firestore.collection(REF_MEMBERS_COL);
 const aggregationsRef = firestore.doc(REF_AGN_USERS_DOC);
 
 export const firestoreUsersOnCreate = functions
