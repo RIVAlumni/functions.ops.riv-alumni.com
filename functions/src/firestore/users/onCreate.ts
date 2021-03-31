@@ -4,8 +4,8 @@ import * as functions from 'firebase-functions';
 import { User, UserAccessLevels, UserAggregation } from '../../models';
 import {
   REF_AGN_USERS_DOC,
-  // DEPLOYMENT_REGION,
-  // DEPLOYMENT_SETTINGS,
+  DEPLOYMENT_REGION,
+  DEPLOYMENT_SETTINGS,
 } from '../../constants';
 
 const firestore = admin.firestore();
@@ -15,8 +15,10 @@ const batch = firestore.batch();
 const membersRef = firestore.collection('members');
 const aggregationsRef = firestore.doc(REF_AGN_USERS_DOC);
 
-export default functions.firestore
-  .document('/users/{docId}/')
+export const firestoreUsersOnCreate = functions
+  .region(DEPLOYMENT_REGION)
+  .runWith(DEPLOYMENT_SETTINGS)
+  .firestore.document('/users/{docId}')
   .onCreate(async (snapshot) => {
     /**
      * Convert snapshot into document data.

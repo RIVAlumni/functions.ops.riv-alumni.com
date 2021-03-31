@@ -524,11 +524,6 @@ base64-js@^1.3.0:
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
-better-firebase-functions@^3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/better-firebase-functions/-/better-firebase-functions-3.4.1.tgz#80a3baf7b576a776e3f69f11c6d36fb0d2f7abbd"
-  integrity sha512-EniLpuXVm1chsJcxgQ1C8+enghK40exDQWKKxWpY+mJzUNP3TVShpKOlrTf+C2/QmJYs3mzxEHA3jgSOhjMe3w==
-
 bignumber.js@^9.0.0:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.0.1.tgz#8d7ba124c882bfd8e43260c67475518d0689e4e5"
