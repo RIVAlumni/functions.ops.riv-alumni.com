@@ -11,13 +11,13 @@ import {
 const firestore = admin.firestore();
 const { FieldValue } = admin.firestore;
 
-const membersRef = firestore.collection(REF_MEMBERS_COL);
-
 export const firestoreUsersOnCreate = functions
   .region(DEPLOYMENT_REGION)
   .runWith(DEPLOYMENT_SETTINGS)
   .firestore.document('/users/{docId}')
   .onCreate(async (snapshot) => {
+    const membersRef = firestore.collection(REF_MEMBERS_COL);
+
     /**
      * Convert snapshot into document data.
      */

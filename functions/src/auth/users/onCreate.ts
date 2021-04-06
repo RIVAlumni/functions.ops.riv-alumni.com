@@ -12,13 +12,13 @@ import {
 const firestore = admin.firestore();
 const { FieldValue } = admin.firestore;
 
-const aggregationsRef = firestore.doc(REF_AGN_USERS_DOC);
-
 export const authUsersOnCreate = functions
   .region(DEPLOYMENT_REGION)
   .runWith(DEPLOYMENT_SETTINGS)
   .auth.user()
   .onCreate(async () => {
+    const aggregationsRef = firestore.doc(REF_AGN_USERS_DOC);
+
     /**
      * Increment `users` aggregation count by 1.
      */

@@ -13,15 +13,15 @@ import {
 const firestore = admin.firestore();
 const { FieldValue } = admin.firestore;
 
-const batch = firestore.batch();
-const usersRef = firestore.collection(REF_USERS_COL);
-const aggregationRef = firestore.doc(REF_AGN_USERS_DOC);
-
 export const authUsersOnDelete = functions
   .region(DEPLOYMENT_REGION)
   .runWith(DEPLOYMENT_SETTINGS)
   .auth.user()
   .onDelete(async (user) => {
+    const batch = firestore.batch();
+    const usersRef = firestore.collection(REF_USERS_COL);
+    const aggregationRef = firestore.doc(REF_AGN_USERS_DOC);
+
     /**
      * Delete the user document.
      */

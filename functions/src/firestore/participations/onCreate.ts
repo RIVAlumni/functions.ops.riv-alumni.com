@@ -12,13 +12,13 @@ import {
 const firestore = admin.firestore();
 const { FieldValue } = admin.firestore;
 
-const aggregationRef = firestore.doc(REF_AGN_PARTICIPATIONS_DOC);
-
 export const firestoreParticipationsOnCreate = functions
   .region(DEPLOYMENT_REGION)
   .runWith(DEPLOYMENT_SETTINGS)
   .firestore.document('/participations/{docId}')
   .onCreate(async () => {
+    const aggregationRef = firestore.doc(REF_AGN_PARTICIPATIONS_DOC);
+
     /**
      * Increment `participations` aggregation count by 1.
      */

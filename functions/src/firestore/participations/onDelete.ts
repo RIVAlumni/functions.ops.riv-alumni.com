@@ -12,13 +12,13 @@ import {
 const firestore = admin.firestore();
 const { FieldValue } = admin.firestore;
 
-const aggregationRef = firestore.doc(REF_AGN_PARTICIPATIONS_DOC);
-
 export const firestoreParticipationsOnDelete = functions
   .region(DEPLOYMENT_REGION)
   .runWith(DEPLOYMENT_SETTINGS)
   .firestore.document('/participations/{docId}')
   .onDelete(async () => {
+    const aggregationRef = firestore.doc(REF_AGN_PARTICIPATIONS_DOC);
+
     /**
      * Decrement `participations` aggregation count by 1.
      */
