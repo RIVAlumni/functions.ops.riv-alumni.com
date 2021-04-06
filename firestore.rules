@@ -56,9 +56,11 @@ service cloud.firestore {
 
       function isValidUpdate() {
         let affectedKeys = getIncomingData().diff(resource.data).affectedKeys();
-        return  affectedKeys.hasOnly(['Access Level'])
+        return  affectedKeys.hasOnly(['Access Level', 'updatedAt'])
                 && getIncomingData()['Access Level'] is int
-                && getIncomingData()['Access Level'] <= getExistingData()['Access Level'];
+                && getIncomingData()['updatedAt'] is timestamp
+                && getIncomingData()['Access Level'] <= getExistingData()['Access Level']
+                && getIncomingData()['updatedAt'] == request.time;
       }
 
       function isValidCreate() {
@@ -69,7 +71,9 @@ service cloud.firestore {
           'Photo URL',
           'Display Name',
           'Membership ID',
-          'Access Level'
+          'Access Level',
+          'updatedAt',
+          'createdAt'
         ];
 
         return  docId == authUser.uid
@@ -79,12 +83,16 @@ service cloud.firestore {
                 && getIncomingData()['Photo URL'] is string
                 && getIncomingData()['Display Name'] is string
                 && getIncomingData()['Access Level'] is int
+                && getIncomingData()['updatedAt'] is timestamp
+                && getIncomingData()['createdAt'] is timestamp
                 && getIncomingData()['User ID'] == authUser.uid
                 && getIncomingData()['Email'] == authUser.token.email
                 && getIncomingData()['Photo URL'] != ''
                 && getIncomingData()['Display Name'] == authUser.token.name
                 && getIncomingData()['Membership ID'] == null
-                && getIncomingData()['Access Level'] == 0;
+                && getIncomingData()['Access Level'] == 0
+                && getIncomingData()['updatedAt'] == request.time
+                && getIncomingData()['createdAt'] == request.time;
       }
     }
 
@@ -233,7 +241,7 @@ service cloud.firestore {
     // }
 
     function isAuthenticated() {
-      return request.auth != null;
+      return request.auth != null && request.auth.token.email_verified;
     }
 
     function getExistingData() {
