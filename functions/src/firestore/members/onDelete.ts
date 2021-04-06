@@ -6,7 +6,7 @@ import {
   DEPLOYMENT_REGION,
   DEPLOYMENT_SETTINGS,
   REF_AGN_MEMBERS_DOC,
-  COUNT_INCREMENT,
+  COUNT_DECREMENT,
 } from '../../constants';
 
 const firestore = admin.firestore();
@@ -14,21 +14,21 @@ const { FieldValue } = admin.firestore;
 
 const aggregationsRef = firestore.doc(REF_AGN_MEMBERS_DOC);
 
-export const firestoreMembersOnCreate = functions
+export const firestoreMembersOnDelete = functions
   .region(DEPLOYMENT_REGION)
   .runWith(DEPLOYMENT_SETTINGS)
   .firestore.document('/members/{docId}')
-  .onCreate(async () => {
+  .onDelete(async () => {
     /**
-     * Increment `members` aggregation count by 1.
+     * Decrement `members` aggregation count by 1.
      */
     const updatedAggregation: MemberAggregation = {
-      membersCount: FieldValue.increment(COUNT_INCREMENT),
+      membersCount: FieldValue.increment(COUNT_DECREMENT),
     };
 
     try {
       return aggregationsRef.set(updatedAggregation, { merge: true });
-    } catch (error) {
-      return functions.logger.error(error);
+    } catch (args) {
+      return functions.logger.error(args);
     }
   });

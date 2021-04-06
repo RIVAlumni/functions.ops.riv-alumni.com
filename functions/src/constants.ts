@@ -14,3 +14,6 @@ export const REF_AGN_USERS_DOC = '/aggregations/users';
 export const REF_AGN_MEMBERS_DOC = '/aggregations/members';
 export const REF_AGN_EVENTS_DOC = '/aggregations/events';
 export const REF_AGN_PARTICIPATIONS_DOC = '/aggregations/participations';
+
+export const COUNT_INCREMENT = 1;
+export const COUNT_DECREMENT = -1;

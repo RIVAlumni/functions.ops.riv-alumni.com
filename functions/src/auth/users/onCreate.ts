@@ -6,6 +6,7 @@ import {
   DEPLOYMENT_REGION,
   DEPLOYMENT_SETTINGS,
   REF_AGN_USERS_DOC,
+  COUNT_INCREMENT,
 } from '../../constants';
 
 const firestore = admin.firestore();
@@ -22,7 +23,7 @@ export const authUsersOnCreate = functions
      * Increment `users` aggregation count by 1.
      */
     const updatedAggregation: UserAggregation = {
-      usersCount: FieldValue.increment(1),
+      usersCount: FieldValue.increment(COUNT_INCREMENT),
     };
 
     try {

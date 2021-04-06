@@ -7,6 +7,7 @@ import {
   DEPLOYMENT_SETTINGS,
   REF_USERS_COL,
   REF_AGN_USERS_DOC,
+  COUNT_DECREMENT,
 } from '../../constants';
 
 const firestore = admin.firestore();
@@ -30,7 +31,7 @@ export const authUsersOnDelete = functions
      * Decrement `users` aggregation count by 1.
      */
     const aggregation: UserAggregation = {
-      usersCount: FieldValue.increment(-1),
+      usersCount: FieldValue.increment(COUNT_DECREMENT),
     };
 
     batch.set(aggregationsRef, aggregation, { merge: true });
