@@ -20,7 +20,7 @@ export const authUsersOnDelete = functions
   .region(DEPLOYMENT_REGION)
   .runWith(DEPLOYMENT_SETTINGS)
   .auth.user()
-  .onDelete((user) => {
+  .onDelete(async (user) => {
     /**
      * Delete the user document.
      */
@@ -35,5 +35,9 @@ export const authUsersOnDelete = functions
 
     batch.set(aggregationsRef, aggregation, { merge: true });
 
-    return batch.commit();
+    try {
+      return batch.commit();
+    } catch (error) {
+      return functions.logger.error(error);
+    }
   });

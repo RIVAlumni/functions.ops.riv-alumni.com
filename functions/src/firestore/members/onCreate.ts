@@ -1,28 +1,28 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
-import { UserAggregation } from '../../models';
+import { MemberAggregation } from '../../models';
 import {
   DEPLOYMENT_REGION,
   DEPLOYMENT_SETTINGS,
-  REF_AGN_USERS_DOC,
+  REF_AGN_MEMBERS_DOC,
 } from '../../constants';
 
 const firestore = admin.firestore();
 const { FieldValue } = admin.firestore;
 
-const aggregationsRef = firestore.doc(REF_AGN_USERS_DOC);
+const aggregationsRef = firestore.doc(REF_AGN_MEMBERS_DOC);
 
-export const authUsersOnCreate = functions
+export const firestoreMembersOnCreate = functions
   .region(DEPLOYMENT_REGION)
   .runWith(DEPLOYMENT_SETTINGS)
-  .auth.user()
+  .firestore.document('/members/{docId}')
   .onCreate(async () => {
     /**
-     * Increment `users` aggregation count by 1.
+     * Increment `members` aggregation count by 1.
      */
-    const updatedAggregation: UserAggregation = {
-      usersCount: FieldValue.increment(1),
+    const updatedAggregation: MemberAggregation = {
+      membersCount: FieldValue.increment(1),
     };
 
     try {

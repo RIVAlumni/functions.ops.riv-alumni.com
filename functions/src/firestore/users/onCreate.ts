@@ -24,7 +24,7 @@ export const firestoreUsersOnCreate = functions
     let user: User = snapshot.data() as User;
 
     /**
-     * Build query to get link membership profile.
+     * Build query to link existing membership profiles.
      */
     const query = membersRef.where('Email', '==', user['Email']).limit(1);
 
@@ -55,5 +55,9 @@ export const firestoreUsersOnCreate = functions
       console.error(new Error(e));
     }
 
-    return snapshot.ref.set(user, { merge: true });
+    try {
+      return snapshot.ref.set(user, { merge: true });
+    } catch (error) {
+      return functions.logger.error(error);
+    }
   });
