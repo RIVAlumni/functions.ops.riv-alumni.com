@@ -14,3 +14,4 @@ export { authUsersOnDelete } from './auth/users/onDelete';
 export { firestoreUsersOnCreate } from './firestore/users/onCreate';
 export { firestoreMembersOnCreate } from './firestore/members/onCreate';
 export { firestoreMembersOnDelete } from './firestore/members/onDelete';
+export { firestoreEventsOnCreate } from './firestore/events/onCreate';
