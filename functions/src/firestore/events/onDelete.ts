@@ -6,28 +6,28 @@ import {
   DEPLOYMENT_REGION,
   DEPLOYMENT_SETTINGS,
   REF_AGN_EVENTS_DOC,
-  COUNT_INCREMENT,
+  COUNT_DECREMENT,
 } from '../../constants';
 
 const firestore = admin.firestore();
 const { FieldValue } = admin.firestore;
 
-const aggregationsRef = firestore.doc(REF_AGN_EVENTS_DOC);
+const aggregationRef = firestore.doc(REF_AGN_EVENTS_DOC);
 
-export const firestoreEventsOnCreate = functions
+export const firestoreEventsOnDelete = functions
   .region(DEPLOYMENT_REGION)
   .runWith(DEPLOYMENT_SETTINGS)
   .firestore.document('/events/{docId}')
-  .onCreate(async () => {
+  .onDelete(async () => {
     /**
-     * Increment `events` aggregation count by 1.
+     * Decrement `events` aggregation count by 1.
      */
     const updatedAggregation: EventAggregation = {
-      eventsCount: FieldValue.increment(COUNT_INCREMENT),
+      eventsCount: FieldValue.increment(COUNT_DECREMENT),
     };
 
     try {
-      return aggregationsRef.set(updatedAggregation, { merge: true });
+      return aggregationRef.set(updatedAggregation, { merge: true });
     } catch (error) {
       return functions.logger.error(error);
     }
