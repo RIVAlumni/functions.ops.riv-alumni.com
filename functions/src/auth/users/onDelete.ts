@@ -15,7 +15,7 @@ const { FieldValue } = admin.firestore;
 
 const batch = firestore.batch();
 const usersRef = firestore.collection(REF_USERS_COL);
-const aggregationsRef = firestore.doc(REF_AGN_USERS_DOC);
+const aggregationRef = firestore.doc(REF_AGN_USERS_DOC);
 
 export const authUsersOnDelete = functions
   .region(DEPLOYMENT_REGION)
@@ -34,7 +34,7 @@ export const authUsersOnDelete = functions
       usersCount: FieldValue.increment(COUNT_DECREMENT),
     };
 
-    batch.set(aggregationsRef, aggregation, { merge: true });
+    batch.set(aggregationRef, aggregation, { merge: true });
 
     try {
       return batch.commit();

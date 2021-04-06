@@ -12,7 +12,7 @@ import {
 const firestore = admin.firestore();
 const { FieldValue } = admin.firestore;
 
-const aggregationsRef = firestore.doc(REF_AGN_EVENTS_DOC);
+const aggregationRef = firestore.doc(REF_AGN_EVENTS_DOC);
 
 export const firestoreEventsOnCreate = functions
   .region(DEPLOYMENT_REGION)
@@ -27,7 +27,7 @@ export const firestoreEventsOnCreate = functions
     };
 
     try {
-      return aggregationsRef.set(updatedAggregation, { merge: true });
+      return aggregationRef.set(updatedAggregation, { merge: true });
     } catch (error) {
       return functions.logger.error(error);
     }

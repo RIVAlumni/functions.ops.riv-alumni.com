@@ -12,7 +12,7 @@ import {
 const firestore = admin.firestore();
 const { FieldValue } = admin.firestore;
 
-const aggregationsRef = firestore.doc(REF_AGN_MEMBERS_DOC);
+const aggregationRef = firestore.doc(REF_AGN_MEMBERS_DOC);
 
 export const firestoreMembersOnDelete = functions
   .region(DEPLOYMENT_REGION)
@@ -27,8 +27,8 @@ export const firestoreMembersOnDelete = functions
     };
 
     try {
-      return aggregationsRef.set(updatedAggregation, { merge: true });
-    } catch (args) {
-      return functions.logger.error(args);
+      return aggregationRef.set(updatedAggregation, { merge: true });
+    } catch (error) {
+      return functions.logger.error(error);
     }
   });
