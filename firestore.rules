@@ -60,7 +60,7 @@ service cloud.firestore {
                 && getIncomingData()['Access Level'] is int
                 && getIncomingData()['updatedAt'] is timestamp
                 && getIncomingData()['Access Level'] <= getExistingData()['Access Level']
-                && getIncomingData()['updatedAt'] == request.time;
+                && getIncomingData()['updatedAt'].toMillis() == request.time.toMillis();
       }
 
       function isValidCreate() {
