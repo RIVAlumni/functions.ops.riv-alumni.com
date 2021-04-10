@@ -42,12 +42,16 @@ service cloud.firestore {
       // * the field `Photo URL` is of type string;
       // * the field `Display Name` is of type string;
       // * the field `Access Level` is of type int;
+      // * the field `updatedAt` is of type timestamp;
+      // * the field `createdAt` is of type timestamp;
       //
       // * the field `User ID` == the user uid;
       // * the field `Email` == the user email;
       // * the field `Display Name` == user name;
       // * the field `Membership ID` == null;
       // * the field `Access Level` == 0;
+      // * the field `updatedAt` == current timestamp;
+      // * the field `createdAt` == current timestamp;
       allow create: if isAuthenticated()
                     && isValidCreate();
 
