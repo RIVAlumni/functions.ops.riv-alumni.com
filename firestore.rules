@@ -60,11 +60,11 @@ service cloud.firestore {
 
       function isValidUpdate() {
         let affectedKeys = getIncomingData().diff(resource.data).affectedKeys();
-        return  affectedKeys.hasOnly(['Access Level', 'updatedAt'])
-                && getIncomingData()['Access Level'] is int
-                && getIncomingData()['updatedAt'] is timestamp
-                && getIncomingData()['Access Level'] <= getExistingData()['Access Level']
-                && getIncomingData()['updatedAt'].toMillis() == request.time.toMillis();
+        return affectedKeys.hasOnly(['Access Level', 'updatedAt'])
+            && getIncomingData()['Access Level'] is int
+            && getIncomingData()['updatedAt'] is timestamp
+            && getIncomingData()['Access Level'] <= getExistingData()['Access Level']
+            && getIncomingData()['updatedAt'].toMillis() == request.time.toMillis();
       }
 
       function isValidCreate() {
@@ -80,23 +80,91 @@ service cloud.firestore {
           'createdAt'
         ];
 
-        return  docId == authUser.uid
-                && getIncomingData().keys().hasOnly(allowedKeys)
-                && getIncomingData()['User ID'] is string
-                && getIncomingData()['Email'] is string
-                && getIncomingData()['Photo URL'] is string
-                && getIncomingData()['Display Name'] is string
-                && getIncomingData()['Access Level'] is int
-                && getIncomingData()['updatedAt'] is timestamp
-                && getIncomingData()['createdAt'] is timestamp
-                && getIncomingData()['User ID'] == authUser.uid
-                && getIncomingData()['Email'] == authUser.token.email
-                && getIncomingData()['Photo URL'] != ''
-                && getIncomingData()['Display Name'] == authUser.token.name
-                && getIncomingData()['Membership ID'] == null
-                && getIncomingData()['Access Level'] == 0
-                && getIncomingData()['updatedAt'].toMillis() == request.time.toMillis()
-                && getIncomingData()['createdAt'].toMillis() == request.time.toMillis();
+        return docId == authUser.uid
+            && getIncomingData().keys().hasOnly(allowedKeys)
+            && getIncomingData()['User ID'] is string
+            && getIncomingData()['Email'] is string
+            && getIncomingData()['Photo URL'] is string
+            && getIncomingData()['Display Name'] is string
+            && getIncomingData()['Access Level'] is int
+            && getIncomingData()['updatedAt'] is timestamp
+            && getIncomingData()['createdAt'] is timestamp
+            && getIncomingData()['User ID'] == authUser.uid
+            && getIncomingData()['Email'] == authUser.token.email
+            && getIncomingData()['Photo URL'] != ''
+            && getIncomingData()['Display Name'] == authUser.token.name
+            && getIncomingData()['Membership ID'] == null
+            && getIncomingData()['Access Level'] == 0
+            && getIncomingData()['updatedAt'].toMillis() == request.time.toMillis()
+            && getIncomingData()['createdAt'].toMillis() == request.time.toMillis();
+      }
+    }
+
+    match /members/{memberId} {
+      allow get:  if isAuthenticated()
+                  && getUserData()['Membership ID'] == memberId;
+
+      allow get:  if isAuthenticated()
+                  && hasPermissionLevel(2);
+
+      allow list: if isAuthenticated()
+                  && hasPermissionLevel(2)
+                  && isWithinQueryLimit();
+
+      allow create: if isAuthenticated()
+                    && hasPermissionLevel(2);
+
+      function isValidCreate() {
+        let incomingData = getIncomingData();
+        let allowedKeys = [
+          'Membership ID',
+          'Full Name',
+          'Gender',
+          'Email',
+          'Contact Number',
+          'Home Number',
+          'Current School',
+          'Graduating Class',
+          'Graduating Year',
+          'Name Of Next-Of-Kin',
+          'Relationship With Next-Of-Kin',
+          'Contact Number Of Next-Of-Kin',
+          'updatedAt',
+          'createdAt'
+        ]
+
+        return incomingData.keys().hasOnly(allowedKeys)
+            && incomingData['Membership ID'] is string
+            && incomingData['Full Name'] is string
+            && incomingData['Gender'] is string
+            && (incomingData['Email'] is string
+            || incomingData['Email'] == null)
+            && incomingData['Contact Number'] is int
+            && (incomingData['Home Number'] is int
+            || incomingData['Home Number'] == null)
+            && (incomingData['Current School'] is string
+            || incomingData['Current School'] == null)
+            && incomingData['Graduating Class'] is string
+            && incomingData['Graduating Year'] is int,
+            && incomingData['Name Of Next-Of-Kin'] is string,
+            && incomingData['Relationship With Next-Of-Kin'] is string
+            && incomingData['Contact Number Of Next-Of-Kin'] is int
+            && incomingData['updatedAt'] is timestamp
+            && incomingData['createdAt'] is timestamp
+            && incomingData['Membership ID'] == memberId
+            && isNotEmpty(incomingData['Full Name'])
+            && incomingData['Gender'] in ['Male', 'Female']
+            && isNotEmpty(incomingData['Email'])
+            && isWithinRange(incomingData['Contact Number'], 81000000, 99999999)
+            && isWithinRange(incomingData['Home Number'], 81000000, 99999999)
+            && isNotEmpty(incomingData['Current School'])
+            && isNotEmpty(incomingData['Graduating Class'])
+            && isWithinRange(incomingData['Graduating Year'], 2000, request.time.year())
+            && isNotEmpty(incomingData['Name Of Next-Of-Kin'])
+            && isNotEmpty(incomingData['Relationship With Next-Of-Kin'])
+            && isWithinRange(incomingData['Contact Number Of Next-Of-Kin'], 81000000, 99999999)
+            && incomingData['updatedAt'].toMillis() == request.time.toMillis()
+            && incomingData['createdAt'].toMillis() == request.time.toMillis();
       }
     }
 
@@ -240,12 +308,15 @@ service cloud.firestore {
             delete: if false;
     }
 
-    // function isUserValid() {
-    //   return exists()
-    // }
-
     function isAuthenticated() {
-      return request.auth != null && request.auth.token.email_verified;
+      return  request.auth != null
+              && request.auth.token.email_verified
+              && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function hasPermissionLevel(level) {
+      let currentUser = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return currentUser['Access Level'] >= level;
     }
 
     function getExistingData() {
@@ -262,6 +333,14 @@ service cloud.firestore {
 
     function getAccessLevel() {
       return getUserData()['Access Level'];
+    }
+
+    function isNotEmpty(value) {
+      return value != '';
+    }
+
+    function isWithinRange(number, start, end) {
+      return (start < number) && (number < end);
     }
 
     function isWithinQueryLimit() {
