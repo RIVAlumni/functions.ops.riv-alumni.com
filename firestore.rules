@@ -161,8 +161,8 @@ service cloud.firestore {
             && incomingData['Gender'] in ['Male', 'Female']
             && (isNotEmpty(request.resource, 'Email')
             ||  incomingData['Email'] == null)
-            && isPhoneNumber(request.resource, 'Contact Number')
-            && (isPhoneNumber(request.resource, 'Home Number')
+            && isValidPhoneNumber(request.resource, 'Contact Number')
+            && (isValidPhoneNumber(request.resource, 'Home Number')
             ||  incomingData['Home Number'] == null)
             && (isNotEmpty(request.resource, 'Current School')
             ||  incomingData['Current School'] == null)
@@ -171,7 +171,7 @@ service cloud.firestore {
             && isWithinRange(incomingData['Graduating Year'], 2000, request.time.year())
             && isNotEmpty(request.resource, 'Name Of Next-Of-Kin')
             && isNotEmpty(request.resource, 'Relationship With Next-Of-Kin')
-            && isPhoneNumber(request.resource, 'Contact Number Of Next-Of-Kin')
+            && isValidPhoneNumber(request.resource, 'Contact Number Of Next-Of-Kin')
             && incomingData['updatedAt'].toMillis() == request.time.toMillis()
             && incomingData['createdAt'].toMillis() == request.time.toMillis();
       }
@@ -385,12 +385,6 @@ service cloud.firestore {
       return data != '';
     }
 
-    function isPhoneNumber(source, key) {
-      let number = source.data[key];
-      return number is int
-          && isWithinRange(number, 81000000, 99999999)
-    }
-
     function isWithinRange(number, start, end) {
       return number is int
           && (start < number) && (number < end);
@@ -398,6 +392,12 @@ service cloud.firestore {
 
     function isWithinQueryLimit() {
       return request.query.limit <= 15;
+    }
+
+    function isValidPhoneNumber(source, key) {
+      let number = source.data[key];
+      return number is int
+          && isWithinRange(number, 81000000, 99999999)
     }
 
     function QUERY_LIMIT() {
