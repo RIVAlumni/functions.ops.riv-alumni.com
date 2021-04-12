@@ -158,18 +158,22 @@ service cloud.firestore {
             && incomingData['createdAt'] is timestamp
             && incomingData['Membership ID'] == memberId
             && isNotEmpty(request.resource, 'Full Name')
-            && incomingData['Gender'] in ['Male', 'Female'];
-            // && isNotEmpty(request.resource, 'Email')
-            // && isPhoneNumber(request.resource, 'Contact Number')
-            // && isPhoneNumber(request.resource, 'Home Number')
-            // && isNotEmpty(request.resource, 'Current School')
-            // && isNotEmpty(request.resource, 'Graduating Class')
-            // && isWithinRange(incomingData['Graduating Year'], 2000, request.time.year())
-            // && isNotEmpty(request.resource, 'Name Of Next-Of-Kin')
-            // && isNotEmpty(request.resource, 'Relationship With Next-Of-Kin')
-            // && isPhoneNumber(request.resource, 'Contact Number Of Next-Of-Kin')
-            // && incomingData['updatedAt'].toMillis() == request.time.toMillis()
-            // && incomingData['createdAt'].toMillis() == request.time.toMillis();
+            && incomingData['Gender'] in ['Male', 'Female']
+            && (isNotEmpty(request.resource, 'Email')
+            ||  incomingData['Email'] == null)
+            && isPhoneNumber(request.resource, 'Contact Number')
+            && (isPhoneNumber(request.resource, 'Home Number')
+            ||  incomingData['Home Number'] == null)
+            && (isNotEmpty(request.resource, 'Current School')
+            ||  incomingData['Current School'] == null)
+            && isNotEmpty(request.resource, 'Graduating Class')
+            && incomingData['Graduating Class'] in GRADUATING_CLASSES()
+            && isWithinRange(incomingData['Graduating Year'], 2000, request.time.year())
+            && isNotEmpty(request.resource, 'Name Of Next-Of-Kin')
+            && isNotEmpty(request.resource, 'Relationship With Next-Of-Kin')
+            && isPhoneNumber(request.resource, 'Contact Number Of Next-Of-Kin')
+            && incomingData['updatedAt'].toMillis() == request.time.toMillis()
+            && incomingData['createdAt'].toMillis() == request.time.toMillis();
       }
 
       function isValidUpdate() {
@@ -398,6 +402,27 @@ service cloud.firestore {
 
     function QUERY_LIMIT() {
       return 15;
+    }
+
+    function GRADUATING_CLASSES() {
+      return [
+        '6A',
+        '6B',
+        '6C',
+        '6D',
+        '6E',
+        '6F',
+        '6G',
+        '6H',
+        '6I',
+        '6J',
+        '6 Respect',
+        '6 Resilience',
+        '6 Responsibility',
+        '6 Integrity',
+        '6 Care',
+        '6 Harmony'
+      ];
     }
   }
 }
