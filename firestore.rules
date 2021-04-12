@@ -114,6 +114,10 @@ service cloud.firestore {
       allow create: if isAuthenticated()
                     && hasPermissionLevel(2)
                     && isValidCreate();
+      
+      allow update: if isAuthenticated()
+                    && hasPermissionLevel(2)
+                    && isValidUpdate();
 
       function isValidCreate() {
         let incomingData = getIncomingData();
@@ -153,19 +157,55 @@ service cloud.firestore {
             && incomingData['updatedAt'] is timestamp
             && incomingData['createdAt'] is timestamp
             && incomingData['Membership ID'] == memberId
-            && isNotEmpty(incomingData['Full Name'])
-            && incomingData['Gender'] in ['Male', 'Female']
-            && isNotEmpty(incomingData['Email'])
-            && isWithinRange(incomingData['Contact Number'], 81000000, 99999999)
-            && isWithinRange(incomingData['Home Number'], 81000000, 99999999)
-            && isNotEmpty(incomingData['Current School'])
-            && isNotEmpty(incomingData['Graduating Class'])
-            && isWithinRange(incomingData['Graduating Year'], 2000, request.time.year())
-            && isNotEmpty(incomingData['Name Of Next-Of-Kin'])
-            && isNotEmpty(incomingData['Relationship With Next-Of-Kin'])
-            && isWithinRange(incomingData['Contact Number Of Next-Of-Kin'], 81000000, 99999999)
-            && incomingData['updatedAt'].toMillis() == request.time.toMillis()
-            && incomingData['createdAt'].toMillis() == request.time.toMillis();
+            && isNotEmpty(request.resource, 'Full Name')
+            && incomingData['Gender'] in ['Male', 'Female'];
+            // && isNotEmpty(request.resource, 'Email')
+            // && isPhoneNumber(request.resource, 'Contact Number')
+            // && isPhoneNumber(request.resource, 'Home Number')
+            // && isNotEmpty(request.resource, 'Current School')
+            // && isNotEmpty(request.resource, 'Graduating Class')
+            // && isWithinRange(incomingData['Graduating Year'], 2000, request.time.year())
+            // && isNotEmpty(request.resource, 'Name Of Next-Of-Kin')
+            // && isNotEmpty(request.resource, 'Relationship With Next-Of-Kin')
+            // && isPhoneNumber(request.resource, 'Contact Number Of Next-Of-Kin')
+            // && incomingData['updatedAt'].toMillis() == request.time.toMillis()
+            // && incomingData['createdAt'].toMillis() == request.time.toMillis();
+      }
+
+      function isValidUpdate() {
+        let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+        let allowedKeys = [
+          'Full Name',
+          'Gender',
+          'Email',
+          'Contact Number',
+          'Home Number',
+          'Current School',
+          'Graduating Class',
+          'Graduating Year', 
+          'Name Of Next-Of-Kin',
+          'Relationship With Next-Of-Kin',
+          'Contact Number Of Next-Of-Kin',
+          'updatedAt'
+        ];
+
+        return affectedKeys.hasOnly(allowedKeys)
+            && getIncomingData()['Full Name'] is string
+            && getIncomingData()['Gender'] is string
+            && (getIncomingData()['Email'] is string
+            ||  getIncomingData()['Email'] == null)
+            && getIncomingData()['Contact Number'] is int
+            && (getIncomingData()['Home Number'] is int
+            ||  getIncomingData()['Home Number'] == null)
+            && (getIncomingData()['Current School'] is string
+            ||  getIncomingData()['Current School'] == null)
+            && getIncomingData()['Graduating Class'] is string
+            && getIncomingData()['Graduating Year'] is int
+            && getIncomingData()['Name Of Next-Of-Kin'] is string
+            && getIncomingData()['Relationship With Next-Of-Kin'] is string
+            && getIncomingData()['Contact Number Of Next-Of-Kin'] is int
+            && getIncomingData()['updatedAt'] is timestamp
+            && getIncomingData()['updatedAt'].toMillis() == request.time.toMillis();
       }
     }
 
@@ -187,31 +227,31 @@ service cloud.firestore {
     //
     // DELETE   If the authenticated user has an access level of 3 (Administrator)
     //          or higher.
-    match /members/{memberId} {
-      allow get:  if isAuthenticated()
-                  && getUserData()['Membership ID'] == memberId;
+    // match /members/{memberId} {
+    //   allow get:  if isAuthenticated()
+    //               && getUserData()['Membership ID'] == memberId;
 
-      allow get: if isAuthenticated()
-                  && getAccessLevel() >= 2;
+    //   allow get: if isAuthenticated()
+    //               && getAccessLevel() >= 2;
 
-      allow list: if isAuthenticated()
-                  && getAccessLevel() >= 2
-                  && request.query.limit <= QUERY_LIMIT();
+    //   allow list: if isAuthenticated()
+    //               && getAccessLevel() >= 2
+    //               && request.query.limit <= QUERY_LIMIT();
 
-      allow create: if isAuthenticated()
-                    && getAccessLevel() >= 2;
+    //   allow create: if isAuthenticated()
+    //                 && getAccessLevel() >= 2;
 
-      allow update: if isAuthenticated()
-                    && getAccessLevel() >= 2
-                    && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
-                    && getIncomingData()['Graduating Class'] == getExistingData()['Graduating Class']
-                    && getIncomingData()['Graduating Year'] == getExistingData()['Graduating Year']
-                    && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
-                    && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
+    //   allow update: if isAuthenticated()
+    //                 && getAccessLevel() >= 2
+    //                 && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
+    //                 && getIncomingData()['Graduating Class'] == getExistingData()['Graduating Class']
+    //                 && getIncomingData()['Graduating Year'] == getExistingData()['Graduating Year']
+    //                 && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
+    //                 && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
 
-      allow delete: if isAuthenticated()
-                    && getAccessLevel() >= 3;
-    }
+    //   allow delete: if isAuthenticated()
+    //                 && getAccessLevel() >= 3;
+    // }
 
     // Events collection contains all the past and upcoming events.
     //
@@ -336,12 +376,20 @@ service cloud.firestore {
       return getUserData()['Access Level'];
     }
 
-    function isNotEmpty(value) {
-      return value != '';
+    function isNotEmpty(source, key) {
+      let data = source.data[key];
+      return data != '';
+    }
+
+    function isPhoneNumber(source, key) {
+      let number = source.data[key];
+      return number is int
+          && isWithinRange(number, 81000000, 99999999)
     }
 
     function isWithinRange(number, start, end) {
-      return (start < number) && (number < end);
+      return number is int
+          && (start < number) && (number < end);
     }
 
     function isWithinQueryLimit() {
