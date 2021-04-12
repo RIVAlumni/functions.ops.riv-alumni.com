@@ -112,7 +112,8 @@ service cloud.firestore {
                   && isWithinQueryLimit();
 
       allow create: if isAuthenticated()
-                    && hasPermissionLevel(2);
+                    && hasPermissionLevel(2)
+                    && isValidCreate();
 
       function isValidCreate() {
         let incomingData = getIncomingData();
@@ -131,7 +132,7 @@ service cloud.firestore {
           'Contact Number Of Next-Of-Kin',
           'updatedAt',
           'createdAt'
-        ]
+        ];
 
         return incomingData.keys().hasOnly(allowedKeys)
             && incomingData['Membership ID'] is string
@@ -145,8 +146,8 @@ service cloud.firestore {
             && (incomingData['Current School'] is string
             || incomingData['Current School'] == null)
             && incomingData['Graduating Class'] is string
-            && incomingData['Graduating Year'] is int,
-            && incomingData['Name Of Next-Of-Kin'] is string,
+            && incomingData['Graduating Year'] is int
+            && incomingData['Name Of Next-Of-Kin'] is string
             && incomingData['Relationship With Next-Of-Kin'] is string
             && incomingData['Contact Number Of Next-Of-Kin'] is int
             && incomingData['updatedAt'] is timestamp
