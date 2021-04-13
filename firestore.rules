@@ -167,8 +167,8 @@ service cloud.firestore {
             && (isNotEmpty(request.resource, 'Current School')
             ||  incomingData['Current School'] == null)
             && isNotEmpty(request.resource, 'Graduating Class')
-            && incomingData['Graduating Class'] in GRADUATING_CLASSES()
-            && isWithinRange(incomingData['Graduating Year'], 2000, request.time.year())
+            && isValidGraduatingClass('Graduating Class')
+            && isValidGraduatingYear('Graduating Year')
             && isNotEmpty(request.resource, 'Name Of Next-Of-Kin')
             && isNotEmpty(request.resource, 'Relationship With Next-Of-Kin')
             && isValidPhoneNumber(request.resource, 'Contact Number Of Next-Of-Kin')
@@ -212,50 +212,6 @@ service cloud.firestore {
             && getIncomingData()['updatedAt'].toMillis() == request.time.toMillis();
       }
     }
-
-    // Members collection contains all the personal identifiable information of
-    // alumni used for identifying an alumnus or contacting emergency contacts.
-    //
-    // GET      If the document belongs to the authenticated user or the
-    //          authenticated user has an access level of 2 (Editor) or higher.
-    //
-    // LIST     If the authenticated user has an access level of 2 (Editor) or
-    //          higher and the query limit not exceeding 10 documents at once.
-    //
-    // CREATE   If the authenticated user has an access level of 2 (Editor) or
-    //          higher.
-    //
-    // UPDATE   If the document belongs to the authenticated user or the
-    //          authenticated user has an access level of 2 (Editor) or higher.
-    //          And the locked document data not being modified.
-    //
-    // DELETE   If the authenticated user has an access level of 3 (Administrator)
-    //          or higher.
-    // match /members/{memberId} {
-    //   allow get:  if isAuthenticated()
-    //               && getUserData()['Membership ID'] == memberId;
-
-    //   allow get: if isAuthenticated()
-    //               && getAccessLevel() >= 2;
-
-    //   allow list: if isAuthenticated()
-    //               && getAccessLevel() >= 2
-    //               && request.query.limit <= QUERY_LIMIT();
-
-    //   allow create: if isAuthenticated()
-    //                 && getAccessLevel() >= 2;
-
-    //   allow update: if isAuthenticated()
-    //                 && getAccessLevel() >= 2
-    //                 && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
-    //                 && getIncomingData()['Graduating Class'] == getExistingData()['Graduating Class']
-    //                 && getIncomingData()['Graduating Year'] == getExistingData()['Graduating Year']
-    //                 && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
-    //                 && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
-
-    //   allow delete: if isAuthenticated()
-    //                 && getAccessLevel() >= 3;
-    // }
 
     // Events collection contains all the past and upcoming events.
     //
@@ -354,9 +310,8 @@ service cloud.firestore {
     }
 
     function isAuthenticated() {
-      return  request.auth != null
-              && request.auth.token.email_verified
-              && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+      return request.auth != null
+          && request.auth.token.email_verified;
     }
 
     function hasPermissionLevel(level) {
@@ -382,12 +337,16 @@ service cloud.firestore {
 
     function isNotEmpty(source, key) {
       let data = source.data[key];
-      return data != '';
+      return (data is string
+          &&  data.trim() != ''
+          &&  data.trim().size() > 0)
+          || (data is int
+          &&  data > 0);
     }
 
     function isWithinRange(number, start, end) {
       return number is int
-          && (start < number) && (number < end);
+          && (start <= number) && (number <= end);
     }
 
     function isWithinQueryLimit() {
@@ -400,12 +359,8 @@ service cloud.firestore {
           && isWithinRange(number, 81000000, 99999999)
     }
 
-    function QUERY_LIMIT() {
-      return 15;
-    }
-
-    function GRADUATING_CLASSES() {
-      return [
+    function isValidGraduatingClass(key) {
+      let classes = [
         '6A',
         '6B',
         '6C',
@@ -423,6 +378,16 @@ service cloud.firestore {
         '6 Care',
         '6 Harmony'
       ];
+      return request.resource.data[key] in classes;
+    }
+
+    function isValidGraduatingYear(key) {
+      let data = request.resource.data[key];
+      return isWithinRange(data, 2000, request.time.year());
+    }
+
+    function QUERY_LIMIT() {
+      return 15;
     }
   }
 }
