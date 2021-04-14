@@ -114,11 +114,11 @@ service cloud.firestore {
       allow create: if isAuthenticated()
                     && hasPermissionLevel(2)
                     && isValidCreate();
-      
+
       allow update: if isAuthenticated()
                     && hasPermissionLevel(2)
                     && isValidUpdate();
-      
+
       allow delete: if isAuthenticated()
                     && hasPermissionLevel(2)
                     && isValidUser();
@@ -185,7 +185,7 @@ service cloud.firestore {
           'Home Number',
           'Current School',
           'Graduating Class',
-          'Graduating Year', 
+          'Graduating Year',
           'Name Of Next-Of-Kin',
           'Relationship With Next-Of-Kin',
           'Contact Number Of Next-Of-Kin',
@@ -218,6 +218,60 @@ service cloud.firestore {
             && isNotEmpty('Relationship With Next-Of-Kin')
             && isValidPhoneNumber('Contact Number Of Next-Of-Kin')
             && data['updatedAt'].toMillis() == request.time.toMillis();
+      }
+    }
+
+    match /events/{eventId} {
+      allow get:  if isAuthenticated()
+                  && hasPermissionLevel(1)
+                  && isNotEmpty('Membership ID');
+
+      allow list: if isAuthenticated()
+                  && hasPermissionLevel(1)
+                  && isWithinQueryLimit(15);
+
+      allow create: if isAuthenticated()
+                    && hasPermissionLevel(2)
+                    && isValidCreate();
+
+      function isValidCreate() {
+        let data = getIncomingData();
+        let allowedKeys = [
+          'Event Code',
+          'Event Year',
+          'Event Name',
+          'Event Thumbnail',
+          'Event Overall In-Charge',
+          'Event Assistant In-Charge',
+          'Google Drive',
+          'Roles',
+          'Official Event',
+          'updatedAt',
+          'createdAt'
+        ];
+
+        return data.keys().hasOnly(allowedKeys)
+            && data['Event Code'] is int
+            && data['Event Year'] is int
+            && data['Event Name'] is string
+            && data['Event Thumbnail'] is string
+            && data['Event Overall In-Charge'] is string
+            && data['Event Assistant In-Charge'] is string
+            && data['Google Drive'] is string
+            && data['Roles'] is list
+            && data['Official Event'] is bool
+            && data['updatedAt'] is timestamp
+            && data['createdAt'] is timestamp
+            && data['Event Code'] == eventId
+            && isWithinRange(data['Event Year'], 2000, request.time.year())
+            && isNotEmpty('Event Name')
+            && isNotEmpty('Event Thumbnail')
+            && isNotEmpty('Event Overall In-Charge')
+            && isNotEmpty('Event Assistant In-Charge')
+            && isNotEmpty('Google Drive')
+            && isNotEmpty('Roles')
+            && data['updatedAt'].toMillis() == request.time.toMillis()
+            && data['createdAt'].toMillis() == request.time.toMillis();
       }
     }
 
@@ -357,7 +411,9 @@ service cloud.firestore {
           &&  data.trim() != ''
           &&  data.trim().size() > 0)
           || (data is int
-          &&  data > 0);
+          &&  data > 0)
+          || (data is list
+          &&  data.size() > 0);
     }
 
     function isWithinRange(number, start, end) {
