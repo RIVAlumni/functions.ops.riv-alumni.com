@@ -1,6 +1,6 @@
 {
   "name": "functions.ops.riv-alumni.com",
-  "version": "2.4.9",
+  "version": "2.4.10",
   "scripts": {
     "start": "jest --watchAll --verbose=false"
   },
