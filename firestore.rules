@@ -21,7 +21,7 @@ service cloud.firestore {
       // Refer to function QUERY_LIMIT.
       allow list: if isAuthenticated()
                   && getAccessLevel() >= 2
-                  && isWithinQueryLimit();
+                  && isWithinQueryLimit(15);
 
       // Allow UPDATE, if
       // * the user is authenticated;
@@ -109,7 +109,7 @@ service cloud.firestore {
 
       allow list: if isAuthenticated()
                   && hasPermissionLevel(2)
-                  && isWithinQueryLimit();
+                  && isWithinQueryLimit(15);
 
       allow create: if isAuthenticated()
                     && hasPermissionLevel(2)
@@ -120,7 +120,7 @@ service cloud.firestore {
                     && isValidUpdate();
 
       function isValidCreate() {
-        let incomingData = getIncomingData();
+        let data = getIncomingData();
         let allowedKeys = [
           'Membership ID',
           'Full Name',
@@ -138,45 +138,40 @@ service cloud.firestore {
           'createdAt'
         ];
 
-        return incomingData.keys().hasOnly(allowedKeys)
-            && incomingData['Membership ID'] is string
-            && incomingData['Full Name'] is string
-            && incomingData['Gender'] is string
-            && (incomingData['Email'] is string
-            || incomingData['Email'] == null)
-            && incomingData['Contact Number'] is int
-            && (incomingData['Home Number'] is int
-            || incomingData['Home Number'] == null)
-            && (incomingData['Current School'] is string
-            || incomingData['Current School'] == null)
-            && incomingData['Graduating Class'] is string
-            && incomingData['Graduating Year'] is int
-            && incomingData['Name Of Next-Of-Kin'] is string
-            && incomingData['Relationship With Next-Of-Kin'] is string
-            && incomingData['Contact Number Of Next-Of-Kin'] is int
-            && incomingData['updatedAt'] is timestamp
-            && incomingData['createdAt'] is timestamp
-            && incomingData['Membership ID'] == memberId
-            && isNotEmpty(request.resource, 'Full Name')
-            && incomingData['Gender'] in ['Male', 'Female']
-            && (isNotEmpty(request.resource, 'Email')
-            ||  incomingData['Email'] == null)
-            && isValidPhoneNumber(request.resource, 'Contact Number')
-            && (isValidPhoneNumber(request.resource, 'Home Number')
-            ||  incomingData['Home Number'] == null)
-            && (isNotEmpty(request.resource, 'Current School')
-            ||  incomingData['Current School'] == null)
-            && isNotEmpty(request.resource, 'Graduating Class')
+        return data.keys().hasOnly(allowedKeys)
+            && data['Membership ID'] is string
+            && data['Full Name'] is string
+            && data['Gender'] is string
+            && (data['Email'] is string || isNull('Email'))
+            && data['Contact Number'] is int
+            && (data['Home Number'] is int || isNull('Home Number'))
+            && (data['Current School'] is string || isNull('Current School'))
+            && data['Graduating Class'] is string
+            && data['Graduating Year'] is int
+            && data['Name Of Next-Of-Kin'] is string
+            && data['Relationship With Next-Of-Kin'] is string
+            && data['Contact Number Of Next-Of-Kin'] is int
+            && data['updatedAt'] is timestamp
+            && data['createdAt'] is timestamp
+            && data['Membership ID'] == memberId
+            && isNotEmpty('Full Name')
+            && isOneOf('Gender', ['Male', 'Female'])
+            && (isNotEmpty('Email') || isNull('Email'))
+            && isValidPhoneNumber('Contact Number')
+            && (isValidPhoneNumber('Home Number') || isNull('Home Number'))
+            && (isNotEmpty('Current School') || isNull('Current School'))
+            && isNotEmpty('Graduating Class')
             && isValidGraduatingClass('Graduating Class')
             && isValidGraduatingYear('Graduating Year')
-            && isNotEmpty(request.resource, 'Name Of Next-Of-Kin')
-            && isNotEmpty(request.resource, 'Relationship With Next-Of-Kin')
-            && isValidPhoneNumber(request.resource, 'Contact Number Of Next-Of-Kin')
-            && incomingData['updatedAt'].toMillis() == request.time.toMillis()
-            && incomingData['createdAt'].toMillis() == request.time.toMillis();
+            && isNotEmpty('Name Of Next-Of-Kin')
+            && isNotEmpty('Relationship With Next-Of-Kin')
+            && isValidPhoneNumber('Contact Number Of Next-Of-Kin')
+            && data['updatedAt'].toMillis() == request.time.toMillis()
+            && data['createdAt'].toMillis() == request.time.toMillis();
       }
 
       function isValidUpdate() {
+        let data = getIncomingData();
         let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
         let allowedKeys = [
           'Full Name',
@@ -194,22 +189,31 @@ service cloud.firestore {
         ];
 
         return affectedKeys.hasOnly(allowedKeys)
-            && getIncomingData()['Full Name'] is string
-            && getIncomingData()['Gender'] is string
-            && (getIncomingData()['Email'] is string
-            ||  getIncomingData()['Email'] == null)
-            && getIncomingData()['Contact Number'] is int
-            && (getIncomingData()['Home Number'] is int
-            ||  getIncomingData()['Home Number'] == null)
-            && (getIncomingData()['Current School'] is string
-            ||  getIncomingData()['Current School'] == null)
-            && getIncomingData()['Graduating Class'] is string
-            && getIncomingData()['Graduating Year'] is int
-            && getIncomingData()['Name Of Next-Of-Kin'] is string
-            && getIncomingData()['Relationship With Next-Of-Kin'] is string
-            && getIncomingData()['Contact Number Of Next-Of-Kin'] is int
-            && getIncomingData()['updatedAt'] is timestamp
-            && getIncomingData()['updatedAt'].toMillis() == request.time.toMillis();
+            && data['Full Name'] is string
+            && data['Gender'] is string
+            && (data['Email'] is string || isNull('Email'))
+            && data['Contact Number'] is int
+            && (data['Home Number'] is int || isNull('Home Number'))
+            && (data['Current School'] is string || isNull('Current School'))
+            && data['Graduating Class'] is string
+            && data['Graduating Year'] is int
+            && data['Name Of Next-Of-Kin'] is string
+            && data['Relationship With Next-Of-Kin'] is string
+            && data['Contact Number Of Next-Of-Kin'] is int
+            && data['updatedAt'] is timestamp
+            && isNotEmpty('Full Name')
+            && isOneOf('Gender', ['Male', 'Female'])
+            && (isNotEmpty('Email') || isNull('Email'))
+            && isValidPhoneNumber('Contact Number')
+            && (isValidPhoneNumber('Home Number') || isNull('Home Number'))
+            && (isNotEmpty('Current School') || isNull('Current School'))
+            && isNotEmpty('Graduating Class')
+            && isValidGraduatingClass('Graduating Class')
+            && isValidGraduatingYear('Graduating Year')
+            && isNotEmpty('Name Of Next-Of-Kin')
+            && isNotEmpty('Relationship With Next-Of-Kin')
+            && isValidPhoneNumber('Contact Number Of Next-Of-Kin')
+            && data['updatedAt'].toMillis() == request.time.toMillis();
       }
     }
 
@@ -335,8 +339,16 @@ service cloud.firestore {
       return getUserData()['Access Level'];
     }
 
-    function isNotEmpty(source, key) {
-      let data = source.data[key];
+    function isNull(key) {
+      return request.resource.data[key] == null;
+    }
+
+    function isOneOf(key, list) {
+      return request.resource.data[key] in list;
+    }
+
+    function isNotEmpty(key) {
+      let data = request.resource.data[key];
       return (data is string
           &&  data.trim() != ''
           &&  data.trim().size() > 0)
@@ -349,14 +361,14 @@ service cloud.firestore {
           && (start <= number) && (number <= end);
     }
 
-    function isWithinQueryLimit() {
-      return request.query.limit <= 15;
+    function isWithinQueryLimit(limit) {
+      return request.query.limit <= limit;
     }
 
-    function isValidPhoneNumber(source, key) {
-      let number = source.data[key];
-      return number is int
-          && isWithinRange(number, 81000000, 99999999)
+    function isValidPhoneNumber(key) {
+      let data = request.resource.data[key];
+      return data is int
+          && isWithinRange(data, 81000000, 99999999);
     }
 
     function isValidGraduatingClass(key) {
