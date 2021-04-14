@@ -118,6 +118,10 @@ service cloud.firestore {
       allow update: if isAuthenticated()
                     && hasPermissionLevel(2)
                     && isValidUpdate();
+      
+      allow delete: if isAuthenticated()
+                    && hasPermissionLevel(2)
+                    && isValidUser();
 
       function isValidCreate() {
         let data = getIncomingData();
@@ -363,6 +367,13 @@ service cloud.firestore {
 
     function isWithinQueryLimit(limit) {
       return request.query.limit <= limit;
+    }
+
+    function isValidUser() {
+      let currentUser = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      let userExists = exists(/databases/$(database)/documents/users/$(request.auth.uid));
+      let memberExists = exists(/databases/$(database)/documents/members/$(currentUser['Membership ID']));
+      return userExists && memberExists;
     }
 
     function isValidPhoneNumber(key) {
