@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
-import { EventAggregation } from '../../models';
+import { Event, EventAggregation } from '../../models';
 import {
   DEPLOYMENT_REGION,
   DEPLOYMENT_SETTINGS,
@@ -9,6 +9,7 @@ import {
   COUNT_DECREMENT,
 } from '../../constants';
 
+const storage = admin.storage();
 const firestore = admin.firestore();
 const { FieldValue } = admin.firestore;
 
@@ -16,7 +17,12 @@ export const firestoreEventsOnDelete = functions
   .region(DEPLOYMENT_REGION)
   .runWith(DEPLOYMENT_SETTINGS)
   .firestore.document('/events/{docId}')
-  .onDelete(async () => {
+  .onDelete(async (snapshot) => {
+    const data = snapshot.data() as Event;
+    const storageRef = storage
+      .bucket('rivalumniops-events')
+      .file(`thumbnails/${data['Event Code']}`);
+
     const aggregationRef = firestore.doc(REF_AGN_EVENTS_DOC);
 
     /**
@@ -25,6 +31,16 @@ export const firestoreEventsOnDelete = functions
     const updatedAggregation: EventAggregation = {
       eventsCount: FieldValue.increment(COUNT_DECREMENT),
     };
+
+    /**
+     * Attempt to delete the event thumbnail.
+     * Must be separate from the decrement of aggregation count.
+     */
+    try {
+      await storageRef.delete();
+    } catch (error) {
+      functions.logger.error(error);
+    }
 
     try {
       return aggregationRef.set(updatedAggregation, { merge: true });
