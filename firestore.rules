@@ -435,7 +435,8 @@ service cloud.firestore {
     function isValidPhoneNumber(key) {
       let data = request.resource.data[key];
       return data is int
-          && isWithinRange(data, 81000000, 99999999);
+          && (isWithinRange(data, 81000000, 99999999)
+          ||  isWithinRange(data, 60000000, 69999999));
     }
 
     function isValidGraduatingClass(key) {
