@@ -10,9 +10,16 @@
     ],
     "source": "functions"
   },
-  "storage": {
-    "rules": "storage.rules"
-  },
+  "storage": [
+    {
+      "rules": "storage.rules",
+      "bucket": "rivalumniops.appspot.com"
+    },
+    {
+      "rules": "rivalumniops-events.rules",
+      "bucket": "rivalumniops-events"
+    }
+  ],
   "emulators": {
     "auth": {
       "port": 9099
