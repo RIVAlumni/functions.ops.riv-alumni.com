@@ -336,29 +336,98 @@ service cloud.firestore {
       allow get:  if isAuthenticated()
                   && getExistingData()['Membership ID'] == getUserData()['Membership ID'];
 
+      allow get:  if isAuthenticated()
+                  && hasPermissionLevel(2);
+
       allow list: if isAuthenticated()
                   && getExistingData()['Membership ID'] == getUserData()['Membership ID']
-                  && request.query.limit <= QUERY_LIMIT();
-
-      allow get:  if isAuthenticated()
-                  && getAccessLevel() >= 2;
+                  && isWithinQueryLimit(15);
 
       allow list: if isAuthenticated()
-                  && getAccessLevel() >= 2
-                  && request.query.limit <= QUERY_LIMIT();
+                  && hasPermissionLevel(2)
+                  && isWithinQueryLimit(15);
 
       allow create: if isAuthenticated()
-                    && getAccessLevel() >= 2;
+                    && hasPermissionLevel(2)
+                    && isValidCreate();
 
       allow update: if isAuthenticated()
-                    && getAccessLevel() >= 2
-                    && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
-                    && getIncomingData()['Event Code'] == getExistingData()['Event Code']
-                    && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
-                    && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
+                    && hasPermissionLevel(2)
+                    && isValidUpdate();
 
       allow delete: if isAuthenticated()
-                    && getAccessLevel() >= 3;
+                    && hasPermissionLevel(2)
+                    && isValidUser();
+
+      function isValidCreate() {
+        let data = getIncomingData();
+        let allowedKeys = [
+          'Participation ID',
+          'Membership ID',
+          'Event Code',
+          'Role',
+          'VIA Hours',
+          'updatedAt',
+          'createdAt'
+        ];
+
+        return data.keys().hasOnly(allowedKeys)
+            && data['Participation ID'] is string
+            && data['Membership ID'] is string
+            && data['Event Code'] is int
+            && data['Role'] is string
+            && data['VIA Hours'] is float
+            && data['updatedAt'] is timestamp
+            && data['createdAt'] is timestamp
+            && data['Participation ID'] == participationId
+            && isNotEmpty(data['Membership ID'])
+            && isNotEmpty(data['Event Code'])
+            && isNotEmpty(data['Role'])
+            && isNotEmpty(data['VIA Hours'])
+            && data['updatedAt'].toMillis() == request.time.toMillis()
+            && data['createdAt'].toMillis() == request.time.toMillis();
+      }
+
+      function isValidUpdate() {
+        let data = getIncomingData();
+        let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+        let allowedKeys = [
+          'Role',
+          'VIA Hours',
+          'updatedAt'
+        ];
+
+        return affectedKeys.hasOnly(allowedKeys)
+            && data['Role'] is string
+            && data['VIA Hours'] is float
+            && isNotEmpty(data['Role'])
+            && isNotEmpty(data['VIA Hours'])
+            && data['updatedAt'].toMillis() == request.time.toMillis();
+      }
+
+      // allow list: if isAuthenticated()
+      //             && getExistingData()['Membership ID'] == getUserData()['Membership ID']
+      //             && request.query.limit <= QUERY_LIMIT();
+
+      // allow get:  if isAuthenticated()
+      //             && getAccessLevel() >= 2;
+
+      // allow list: if isAuthenticated()
+      //             && getAccessLevel() >= 2
+      //             && request.query.limit <= QUERY_LIMIT();
+
+      // allow create: if isAuthenticated()
+      //               && getAccessLevel() >= 2;
+
+      // allow update: if isAuthenticated()
+      //               && getAccessLevel() >= 2
+      //               && getIncomingData()['Membership ID'] == getExistingData()['Membership ID']
+      //               && getIncomingData()['Event Code'] == getExistingData()['Event Code']
+      //               && getIncomingData()['updatedAt'] == getExistingData()['updatedAt']
+      //               && getIncomingData()['createdAt'] == getExistingData()['createdAt'];
+
+      // allow delete: if isAuthenticated()
+      //               && getAccessLevel() >= 3;
     }
 
     match /aggregations/{aggregationId} {
@@ -373,7 +442,8 @@ service cloud.firestore {
 
     function isAuthenticated() {
       return request.auth != null
-          && request.auth.token.email_verified;
+          && request.auth.token.email_verified
+          && exists(/databases/$(database)/documents/users/$(request.auth.uid));
     }
 
     function hasPermissionLevel(level) {
@@ -426,8 +496,8 @@ service cloud.firestore {
     }
 
     function isValidUser() {
-      let currentUser = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
       let userExists = exists(/databases/$(database)/documents/users/$(request.auth.uid));
+      let currentUser = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
       let memberExists = exists(/databases/$(database)/documents/members/$(currentUser['Membership ID']));
       return userExists && memberExists;
     }
