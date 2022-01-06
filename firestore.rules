@@ -380,10 +380,10 @@ service cloud.firestore {
             && data['updatedAt'] is timestamp
             && data['createdAt'] is timestamp
             && data['Participation ID'] == participationId
-            && isNotEmpty(data['Membership ID'])
-            && isNotEmpty(data['Event Code'])
-            && isNotEmpty(data['Role'])
-            && isNotEmpty(data['VIA Hours'])
+            && isNotEmpty('Membership ID')
+            && isNotEmpty('Event Code')
+            && isNotEmpty('Role')
+            && isNotEmpty('VIA Hours')
             && data['updatedAt'].toMillis() == request.time.toMillis()
             && data['createdAt'].toMillis() == request.time.toMillis();
       }
@@ -481,9 +481,9 @@ service cloud.firestore {
           &&  data.trim() != ''
           &&  data.trim().size() > 0)
           || (data is int
-          &&  data > 0)
+          &&  data >= 0)
           || (data is float
-          &&  data > 0)
+          &&  data >= 0)
           || (data is list
           &&  data.size() > 0);
     }
