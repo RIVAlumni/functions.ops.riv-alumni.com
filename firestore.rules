@@ -376,7 +376,8 @@ service cloud.firestore {
             && data['Membership ID'] is string
             && data['Event Code'] is int
             && data['Role'] is string
-            && data['VIA Hours'] is float
+            && (data['VIA Hours'] is int
+            ||  data['VIA Hours'] is float)
             && data['updatedAt'] is timestamp
             && data['createdAt'] is timestamp
             && data['Participation ID'] == participationId
