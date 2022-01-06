@@ -482,6 +482,8 @@ service cloud.firestore {
           &&  data.trim().size() > 0)
           || (data is int
           &&  data > 0)
+          || (data is float
+          &&  data > 0)
           || (data is list
           &&  data.size() > 0);
     }
